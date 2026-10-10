@@ -1,0 +1,294 @@
+:root {
+    --primary-color: #205c3b;
+    --primary-hover: #17452c;
+    --primary-light: #e8f5ed;
+    --accent-color: #2ecc71;
+    --accent-soft: #f4fbf7;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --bg-cream: #fbfbf9;
+    --card-border: #eef1ec;
+    --badge-high: #fee2e2;
+    --badge-high-text: #b91c1c;
+    --badge-med: #fef3c7;
+    --badge-med-text: #b45309;
+    --badge-low: #dcfce7;
+    --badge-low-text: #15803d;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-cream);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1 0 auto;
+}
+
+/* Navbar */
+.navbar-bean {
+    background-color: #ffffff;
+    border-bottom: 1px solid #edf2ed;
+    padding: 0.85rem 0;
+}
+
+.navbar-brand-bean {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--primary-color) !important;
+    text-decoration: none;
+}
+
+.navbar-brand-bean .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.nav-link-bean {
+    color: #4b5563;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.2s ease;
+}
+
+.nav-link-bean:hover {
+    color: var(--primary-color);
+}
+
+.btn-primary-bean {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    padding: 0.55rem 1.4rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-bean:hover {
+    background-color: var(--primary-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(32, 92, 59, 0.2);
+}
+
+.btn-outline-bean {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid #d1d5db;
+    font-weight: 600;
+    padding: 0.55rem 1.3rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-bean:hover {
+    border-color: var(--primary-color);
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+/* Hero Section */
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.18;
+    color: #111827;
+    letter-spacing: -0.02em;
+}
+
+.hero-lead {
+    font-size: 1.125rem;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-top: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.stat-number {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.15rem;
+}
+
+/* Feature Cards */
+.feature-step-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 1.25rem;
+    padding: 2rem 1.75rem;
+    height: 100%;
+    transition: all 0.25s ease;
+}
+
+.feature-step-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+}
+
+.step-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 1.25rem;
+}
+
+.step-1 { background-color: #d1fae5; color: #065f46; }
+.step-2 { background-color: #fef3c7; color: #92400e; }
+.step-3 { background-color: #fee2e2; color: #991b1b; }
+
+/* Disease Cards */
+.disease-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    height: 100%;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.disease-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.06);
+}
+
+.disease-img-wrapper {
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    height: 160px;
+    background-color: #e5e7eb;
+}
+
+.disease-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.badge-severity-high {
+    background-color: var(--badge-high);
+    color: var(--badge-high-text);
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 9999px;
+}
+
+.badge-severity-med {
+    background-color: var(--badge-med);
+    color: var(--badge-med-text);
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 9999px;
+}
+
+.badge-severity-low {
+    background-color: var(--badge-low);
+    color: var(--badge-low-text);
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 9999px;
+}
+
+/* Call to action card */
+.cta-banner {
+    background: linear-gradient(135deg, #1b492f 0%, #205c3b 100%);
+    border-radius: 1.5rem;
+    padding: 3.5rem 3rem;
+    color: #ffffff;
+}
+
+.btn-cta {
+    background: #ffffff;
+    color: var(--primary-color);
+    font-weight: 700;
+    padding: 0.85rem 2rem;
+    border-radius: 9999px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-cta:hover {
+    background: #f3f4f6;
+    color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Testimonial card */
+.testimonial-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    height: 100%;
+}
+
+/* Auth Cards */
+.auth-wrapper {
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+}
+
+.auth-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 480px;
+    padding: 2.5rem;
+}
+
+.auth-card-title {
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(32, 92, 59, 0.15);
+}
+
+/* Footer */
+.footer-bean {
+    background-color: #ffffff;
+    border-top: 1px solid #edf2ed;
+    padding: 2.5rem 0 1.5rem 0;
+    margin-top: 4rem;
+}

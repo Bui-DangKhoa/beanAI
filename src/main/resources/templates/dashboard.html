@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/base :: header('Bàn làm việc Nông dân - BeanAI')}">
+</head>
+<body>
+
+    <!-- NAVBAR CHUNG -->
+    <div th:replace="~{layout/base :: navbar}"></div>
+
+    <main class="main-content py-4">
+        <div class="container">
+            <!-- Header chào mừng người dùng -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom gap-3">
+                <div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 mb-2">
+                        <i class="bi bi-person-badge me-1"></i> Tài khoản Nông dân
+                    </span>
+                    <h2 class="fw-bold text-dark mb-1">
+                        Xin chào, <span th:text="${currentUser != null ? currentUser.fullName : 'Bà con nông dân'}">Bác Ba</span>!
+                    </h2>
+                    <p class="text-muted small mb-0">
+                        Email: <strong th:text="${currentUser != null ? currentUser.email : ''}">user@gmail.com</strong> 
+                        <span th:if="${currentUser != null and currentUser.phone != null}">
+                            • SĐT: <strong th:text="${currentUser.phone}">0912345678</strong>
+                        </span>
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/}" class="btn btn-outline-bean btn-sm">
+                        <i class="bi bi-house me-1"></i> Về trang chủ
+                    </a>
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Thống kê nhanh của nông hộ -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 bg-success-subtle text-success p-3 fs-4">
+                                <i class="bi bi-camera-fill"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Lượt đã chẩn đoán</div>
+                                <div class="fs-4 fw-bold" id="statScanCount" th:text="${totalScans != null ? totalScans : 0}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 bg-primary-subtle text-primary p-3 fs-4">
+                                <i class="bi bi-cpu-fill"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Mô hình AI kích hoạt</div>
+                                <div class="fs-6 fw-bold text-success text-truncate">best.pt (YOLOv8-26)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 bg-warning-subtle text-warning p-3 fs-4">
+                                <i class="bi bi-journal-medical"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Số bệnh nhận diện</div>
+                                <div class="fs-4 fw-bold text-dark">11 bệnh</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-3 bg-info-subtle text-info p-3 fs-4">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">Tình trạng hệ thống</div>
+                                <div class="fs-6 fw-bold text-success">Sẵn sàng phân tích</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khu vực tải ảnh phân tích AI -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="bi bi-camera-fill text-success me-2"></i> Chẩn đoán bệnh bằng Mô hình AI (best.pt)
+                            </h5>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">Dataset Trained Model</span>
+                        </div>
+                        <p class="text-muted small mb-3">
+                            Hệ thống sử dụng trọng số mô hình tốt nhất <code>best.pt</code> đã được huấn luyện để phân tích và chỉ ra chính xác loại bệnh trên lá cây đậu.
+                        </p>
+
+                        <!-- Khung kéo thả tải ảnh -->
+                        <div class="border border-2 border-dashed rounded-4 p-4 text-center mb-3 bg-light" id="dropArea" style="cursor: pointer;">
+                            <i class="bi bi-cloud-arrow-up-fill text-success display-4 mb-2 d-block"></i>
+                            <h6 class="fw-bold mb-1">Kéo thả hoặc bấm vào đây để chọn ảnh lá đậu</h6>
+                            <p class="text-muted small mb-3">Hỗ trợ JPG, PNG, WEBP (Khuyến nghị chụp rõ nét phiến lá)</p>
+                            <input type="file" id="fileUpload" class="d-none" accept="image/*">
+                            <button type="button" class="btn btn-outline-bean btn-sm px-4" onclick="document.getElementById('fileUpload').click()">
+                                <i class="bi bi-folder2-open me-1"></i> Duyệt ảnh từ máy tính / điện thoại
+                            </button>
+                        </div>
+
+                        <!-- Khung xem trước & kích hoạt phân tích -->
+                        <div id="previewArea" class="d-none mb-3 p-3 bg-light rounded-3 border">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img id="previewImg" src="#" alt="Preview" class="rounded-3 object-fit-cover shadow-sm" style="width: 75px; height: 75px;">
+                                    <div>
+                                        <div class="fw-bold small text-truncate" style="max-width: 220px;" id="fileName">anh_la_dau.jpg</div>
+                                        <div class="text-muted small" id="fileSize">Kích thước ảnh</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary-bean" id="btnAnalyze">
+                                    <i class="bi bi-magic me-1"></i> Phân tích ngay với AI (best.pt)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Spinner Loading khi AI đang chạy -->
+                        <div id="loadingArea" class="d-none text-center py-4 p-3 bg-light rounded-3 border mb-3">
+                            <div class="spinner-border text-success mb-2" role="status" style="width: 2.5rem; height: 2.5rem;">
+                                <span class="visually-hidden">Đang phân tích...</span>
+                            </div>
+                            <div class="fw-bold text-dark">Hệ thống AI đang đọc cấu trúc mô bệnh học từ mô hình best.pt...</div>
+                            <div class="text-muted small">Thời gian dự kiến: 1 - 2 giây</div>
+                        </div>
+
+                        <!-- KHUNG HIỂN THỊ KẾT QUẢ PHÂN TÍCH CHI TIẾT (DYNAMIC RESULT) -->
+                        <div id="resultArea" class="d-none p-4 rounded-4 border bg-white shadow-sm mt-3 border-success">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="badge mb-1" id="resSeverityBadge">Mức độ</span>
+                                    <h4 class="fw-bold text-dark mb-0" id="resDiseaseName">Tên Bệnh</h4>
+                                    <div class="text-muted small fst-italic" id="resScientificName">Tên khoa học</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small text-muted">Độ tin cậy AI</div>
+                                    <div class="fs-4 fw-bold text-success" id="resConfidence">98.5%</div>
+                                </div>
+                            </div>
+
+                            <!-- Thanh tiến trình độ tin cậy -->
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar bg-success" id="resProgressBar" role="progressbar" style="width: 98%;"></div>
+                            </div>
+
+                            <!-- Triệu chứng -->
+                            <div class="p-3 bg-light rounded-3 mb-3 border">
+                                <h6 class="fw-bold text-dark mb-1"><i class="bi bi-eye-fill text-primary me-2"></i> Triệu chứng nhận biết:</h6>
+                                <p class="text-secondary small mb-0" id="resSymptoms">Mô tả triệu chứng...</p>
+                            </div>
+
+                            <!-- Hướng dẫn điều trị & Thuốc -->
+                            <div class="p-3 bg-success-subtle rounded-3 mb-3 border border-success-subtle">
+                                <h6 class="fw-bold text-success-emphasis mb-1"><i class="bi bi-heart-pulse-fill text-danger me-2"></i> Phác đồ điều trị & Thuốc đề xuất:</h6>
+                                <p class="text-success-emphasis small mb-0" id="resTreatment">Hướng dẫn điều trị...</p>
+                            </div>
+
+                            <!-- Top các khả năng khác -->
+                            <div id="topCandidatesBox" class="small text-muted border-top pt-2">
+                                <span class="fw-bold">Các khả năng liên quan khác:</span>
+                                <div id="candidatesList" class="d-flex flex-wrap gap-2 mt-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột thông tin 11 nhãn bệnh được mô hình best.pt hỗ trợ -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="bi bi-list-check text-success me-2"></i> 11 Bệnh mô hình best.pt nhận diện
+                            </h5>
+                            <span class="badge bg-light text-secondary border">11 Classes</span>
+                        </div>
+                        <p class="text-muted small mb-3">Mô hình đã được train nhận diện chuẩn xác các phân loại sau:</p>
+                        
+                        <div class="list-group list-group-flush small" style="max-height: 480px; overflow-y: auto;">
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">1. Lá đậu khỏe mạnh</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Fresh Leaf</span></div>
+                                <span class="badge badge-severity-low">An toàn</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">2. Bệnh gỉ sắt</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Rust (Uromyces)</span></div>
+                                <span class="badge badge-severity-high">Nguy hiểm</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">3. Bệnh thán thư</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Anthracnose</span></div>
+                                <span class="badge badge-severity-high">Nguy hiểm</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">4. Bệnh đốm góc lá</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Angular Leaf Spot</span></div>
+                                <span class="badge badge-severity-med">Trung bình</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">5. Đốm cháy vi khuẩn quầng vàng</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Halo Blight</span></div>
+                                <span class="badge badge-severity-high">Nguy hiểm</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">6. Bệnh virus khảm lá</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Mosaic Virus (BCMV)</span></div>
+                                <span class="badge badge-severity-high">Nguy hiểm</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">7. Bệnh virus khảm vàng</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Yellow Mosaic (MYMV)</span></div>
+                                <span class="badge badge-severity-high">Nguy hiểm</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">8. Bệnh đốm lá Cercospora</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Cercospora Leaf Spot</span></div>
+                                <span class="badge badge-severity-med">Trung bình</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">9. Nấm bệnh thân lá</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Fungi Pathogens</span></div>
+                                <span class="badge badge-severity-med">Trung bình</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">10. Sâu khoang ăn lá</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Tobacco Caterpillar</span></div>
+                                <span class="badge badge-severity-high">Sâu hại</span>
+                            </div>
+                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                <div><strong class="text-dark">11. Thiếu hụt dinh dưỡng Kali</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Potassium Deficiency</span></div>
+                                <span class="badge badge-severity-low">Sinh lý</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng lịch sử quét bệnh thực tế từ cơ sở dữ liệu -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-clock-history text-success me-2"></i> Lịch sử chẩn đoán của bạn
+                    </h5>
+                    <span class="text-muted small">Lưu trữ trên cơ sở dữ liệu MySQL</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="historyTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Ảnh lá</th>
+                                <th>Bệnh chẩn đoán</th>
+                                <th>Độ tin cậy</th>
+                                <th>Mức độ</th>
+                                <th>Biện pháp xử lý tóm tắt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- Dữ liệu render từ Thymeleaf database -->
+                            <tr th:each="item : ${diagnosisList}">
+                                <td class="small text-muted" th:text="${#temporals.format(item.createdAt, 'dd/MM/yyyy HH:mm')}">10/10/2026</td>
+                                <td>
+                                    <img th:src="@{${item.imagePath}}" class="rounded-2 shadow-sm object-fit-cover" width="44" height="44" alt="Ảnh chẩn đoán">
+                                </td>
+                                <td>
+                                    <strong class="text-dark" th:text="${item.vietnameseName}">Bệnh gỉ sắt</strong>
+                                    <span class="text-muted small d-block" th:text="${item.scientificName}">Uromyces</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success" th:text="${item.confidence + '%'}">98%</span>
+                                </td>
+                                <td>
+                                    <span th:class="${item.severityCode == 'HIGH' ? 'badge badge-severity-high' : (item.severityCode == 'SAFE' ? 'badge badge-severity-low' : 'badge badge-severity-med')}"
+                                          th:text="${item.severity}">Cao</span>
+                                </td>
+                                <td class="small text-secondary text-truncate" style="max-width: 280px;" th:text="${item.treatment}">
+                                    Phun thuốc...
+                                </td>
+                            </tr>
+                            <!-- Khi chưa có lượt chẩn đoán nào -->
+                            <tr th:if="${diagnosisList == null or #lists.isEmpty(diagnosisList)}" id="emptyRow">
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-1 text-secondary"></i>
+                                    Chưa có lượt chẩn đoán nào trong tài khoản. Hãy tải lên bức ảnh đầu tiên để trải nghiệm mô hình AI!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER CHUNG -->
+    <div th:replace="~{layout/base :: footer}"></div>
+
+    <!-- CSRF Token Meta cho fetch AJAX -->
+    <input type="hidden" id="csrfToken" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <input type="hidden" id="csrfHeader" th:value="${_csrf.headerName}" />
+
+    <!-- JavaScript xử lý tương tác Upload & Gọi API Model best.pt -->
+    <script>
+        const fileUpload = document.getElementById('fileUpload');
+        const dropArea = document.getElementById('dropArea');
+        const previewArea = document.getElementById('previewArea');
+        const previewImg = document.getElementById('previewImg');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const btnAnalyze = document.getElementById('btnAnalyze');
+        const loadingArea = document.getElementById('loadingArea');
+        const resultArea = document.getElementById('resultArea');
+        const historyTableBody = document.getElementById('historyTableBody');
+        const emptyRow = document.getElementById('emptyRow');
+        const statScanCount = document.getElementById('statScanCount');
+
+        let selectedFile = null;
+
+        // Xử lý khi chọn file qua input
+        fileUpload.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                handleFile(this.files[0]);
+            }
+        });
+
+        // Xử lý kéo thả (Drag and Drop)
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('border-success', 'bg-white');
+        });
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('border-success', 'bg-white');
+        });
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('border-success', 'bg-white');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewArea.classList.remove('d-none');
+                resultArea.classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
+            fileName.textContent = file.name;
+            fileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+        }
+
+        // Bấm nút phân tích ảnh với mô hình best.pt
+        btnAnalyze.addEventListener('click', async function() {
+            if (!selectedFile) {
+                alert('Vui lòng chọn hoặc kéo thả ảnh lá đậu trước!');
+                return;
+            }
+
+            // Hiển thị trạng thái Loading
+            loadingArea.classList.remove('d-none');
+            resultArea.classList.add('d-none');
+            btnAnalyze.disabled = true;
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            const csrfToken = document.getElementById('csrfToken')?.value;
+            const csrfHeader = document.getElementById('csrfHeader')?.value;
+
+            const headers = {};
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader] = csrfToken;
+            }
+
+            try {
+                const response = await fetch('/api/ai/predict', {
+                    method: 'POST',
+                    headers: headers,
+                    body: formData
+                });
+
+                const data = await response.json();
+                loadingArea.classList.add('d-none');
+                btnAnalyze.disabled = false;
+
+                if (!data.success) {
+                    alert('Lỗi: ' + (data.error || 'Không thể phân tích ảnh'));
+                    return;
+                }
+
+                // Hiển thị kết quả ra màn hình
+                displayResult(data);
+
+                // Thêm vào bảng lịch sử
+                addToHistoryTable(data);
+
+            } catch (error) {
+                loadingArea.classList.add('d-none');
+                btnAnalyze.disabled = false;
+                alert('Đã xảy ra lỗi kết nối tới máy chủ AI: ' + error.message);
+            }
+        });
+
+        function displayResult(data) {
+            document.getElementById('resDiseaseName').textContent = data.vietnameseName;
+            document.getElementById('resScientificName').textContent = data.scientificName;
+            document.getElementById('resConfidence').textContent = data.confidence + '%';
+            document.getElementById('resProgressBar').style.width = data.confidence + '%';
+            document.getElementById('resSymptoms').textContent = data.symptoms;
+            document.getElementById('resTreatment').textContent = data.treatment;
+
+            const badge = document.getElementById('resSeverityBadge');
+            badge.textContent = 'Mức độ: ' + data.severity;
+            if (data.severityCode === 'HIGH') {
+                badge.className = 'badge badge-severity-high mb-1';
+            } else if (data.severityCode === 'SAFE') {
+                badge.className = 'badge badge-severity-low mb-1';
+            } else {
+                badge.className = 'badge badge-severity-med mb-1';
+            }
+
+            // Top candidates
+            const candidatesList = document.getElementById('candidatesList');
+            candidatesList.innerHTML = '';
+            if (data.topCandidates && data.topCandidates.length > 1) {
+                data.topCandidates.slice(1, 4).forEach(cand => {
+                    const pill = document.createElement('span');
+                    pill.className = 'badge bg-light text-secondary border';
+                    pill.textContent = `${cand.vietnameseName} (${cand.confidence}%)`;
+                    candidatesList.appendChild(pill);
+                });
+            }
+
+            resultArea.classList.remove('d-none');
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function addToHistoryTable(data) {
+            if (emptyRow) {
+                emptyRow.remove();
+            }
+
+            // Tăng số lượt quét
+            if (statScanCount) {
+                const currentCount = parseInt(statScanCount.textContent) || 0;
+                statScanCount.textContent = currentCount + 1;
+            }
+
+            const now = new Date();
+            const timeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth()+1).padStart(2, '0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            let badgeClass = 'badge badge-severity-med';
+            if (data.severityCode === 'HIGH') badgeClass = 'badge badge-severity-high';
+            else if (data.severityCode === 'SAFE') badgeClass = 'badge badge-severity-low';
+
+            const tr = document.createElement('tr');
+            tr.className = 'table-success-subtle';
+            tr.innerHTML = `
+                <td class="small text-muted">${timeStr} <span class="badge bg-success" style="font-size:0.65rem;">Mới</span></td>
+                <td><img src="${data.imageUrl}" class="rounded-2 shadow-sm object-fit-cover" width="44" height="44" alt="Ảnh"></td>
+                <td><strong class="text-dark">${data.vietnameseName}</strong><span class="text-muted small d-block">${data.scientificName}</span></td>
+                <td><span class="badge bg-success-subtle text-success">${data.confidence}%</span></td>
+                <td><span class="${badgeClass}">${data.severity}</span></td>
+                <td class="small text-secondary text-truncate" style="max-width: 280px;">${data.treatment}</td>
+            `;
+
+            historyTableBody.insertBefore(tr, historyTableBody.firstChild);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/base :: header('Đăng ký tài khoản - BeanAI')}">
+</head>
+<body>
+
+    <!-- NAVBAR CHUNG -->
+    <div th:replace="~{layout/base :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="auth-wrapper">
+            <div class="auth-card" style="max-width: 520px;">
+                <div class="text-center mb-4">
+                    <span class="logo-icon fs-3 mb-2 d-inline-flex" style="width: 48px; height: 48px;"><i class="bi bi-flower2"></i></span>
+                    <h2 class="auth-card-title">Đăng ký tài khoản Nông dân</h2>
+                    <p class="text-muted small">Tạo tài khoản để bắt đầu quét chẩn đoán và nhận tư vấn điều trị cây đậu</p>
+                </div>
+
+                <!-- THÔNG BÁO LỖI CHUNG (NẾU CÓ) -->
+                <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center rounded-3 py-2 px-3 small mb-3 border-0 bg-danger-subtle text-danger">
+                    <i class="bi bi-exclamation-octagon-fill fs-5 me-2"></i>
+                    <div th:text="${errorMessage}">Đã xảy ra lỗi</div>
+                </div>
+
+                <!-- FORM ĐĂNG KÝ -->
+                <form th:action="@{/register}" th:object="${registerDTO}" method="post" novalidate>
+                    <!-- Họ và tên -->
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label small fw-semibold text-secondary">Họ và tên của bạn</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
+                            <input type="text" 
+                                   class="form-control border-start-0" 
+                                   th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
+                                   id="fullName" 
+                                   th:field="*{fullName}" 
+                                   placeholder="Nguyễn Văn A" 
+                                   required>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">
+                            Họ và tên không hợp lệ
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label small fw-semibold text-secondary">Địa chỉ Email (dùng để đăng nhập)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
+                            <input type="email" 
+                                   class="form-control border-start-0" 
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                   id="email" 
+                                   th:field="*{email}" 
+                                   placeholder="nongdan@example.com" 
+                                   required>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                            Email không hợp lệ
+                        </div>
+                    </div>
+
+                    <!-- Số điện thoại -->
+                    <div class="mb-3">
+                        <label for="phone" class="form-label small fw-semibold text-secondary">Số điện thoại liên hệ (10 chữ số)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-telephone"></i></span>
+                            <input type="tel" 
+                                   class="form-control border-start-0" 
+                                   th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''"
+                                   id="phone" 
+                                   th:field="*{phone}" 
+                                   placeholder="0912345678" 
+                                   required>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
+                            Số điện thoại không hợp lệ
+                        </div>
+                    </div>
+
+                    <!-- Mật khẩu -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label small fw-semibold text-secondary">Mật khẩu (tối thiểu 6 ký tự)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-lock"></i></span>
+                            <input type="password" 
+                                   class="form-control border-start-0" 
+                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                   id="password" 
+                                   th:field="*{password}" 
+                                   placeholder="Tối thiểu 6 ký tự" 
+                                   required>
+                            <button class="btn btn-outline-secondary border-start-0 bg-white text-muted" type="button" id="togglePassword">
+                                <i class="bi bi-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+                            Mật khẩu không hợp lệ
+                        </div>
+                    </div>
+
+                    <!-- Xác nhận mật khẩu -->
+                    <div class="mb-4">
+                        <label for="confirmPassword" class="form-label small fw-semibold text-secondary">Xác nhận lại mật khẩu</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-shield-check"></i></span>
+                            <input type="password" 
+                                   class="form-control border-start-0" 
+                                   th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                                   id="confirmPassword" 
+                                   th:field="*{confirmPassword}" 
+                                   placeholder="Nhập lại chính xác mật khẩu trên" 
+                                   required>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">
+                            Mật khẩu xác nhận không khớp
+                        </div>
+                    </div>
+
+                    <!-- Nút Đăng ký -->
+                    <button type="submit" class="btn btn-primary-bean w-100 py-2 fs-6">
+                        Tạo tài khoản ngay <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                </form>
+
+                <!-- Đã có tài khoản -->
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="small text-muted mb-0">
+                        Đã có tài khoản trên Bean AI? 
+                        <a th:href="@{/login}" class="fw-bold text-success text-decoration-none">Đăng nhập tại đây</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER CHUNG -->
+    <div th:replace="~{layout/base :: footer}"></div>
+
+    <!-- Toggle Password script -->
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('bi-eye');
+                eyeIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('bi-eye-slash');
+                eyeIcon.classList.add('bi-eye');
+            }
+        });
+    </script>
+</body>
+</html>

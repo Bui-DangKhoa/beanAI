@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/base :: header('BeanAI - Nhận diện sâu bệnh trên cây đậu')}">
+</head>
+<body>
+
+    <!-- NAVBAR CHUNG -->
+    <div th:replace="~{layout/base :: navbar}"></div>
+
+    <main class="main-content">
+        <!-- HERO SECTION -->
+        <section class="py-5">
+            <div class="container py-lg-4">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-7">
+                        <h1 class="hero-title mb-3">
+                            Một bức ảnh. Biết ngay<br>cây đậu đang gặp bệnh gì.
+                        </h1>
+                        <p class="hero-lead">
+                            Chụp ảnh lá đậu, hệ thống phân tích trong vài giây và gợi ý cách xử lý phù hợp — không cần đợi chuyên gia đến tận vườn.
+                        </p>
+                        
+                        <div class="d-flex flex-wrap gap-3 mb-5">
+                            <a th:href="@{/dashboard}" class="btn btn-primary-bean px-4 py-2 fs-6">
+                                <i class="bi bi-camera-fill me-2"></i> Nhận diện ảnh ngay
+                            </a>
+                            <a href="#steps" class="btn btn-outline-bean px-4 py-2 fs-6">
+                                <i class="bi bi-play-circle me-1"></i> Xem cách hoạt động
+                            </a>
+                        </div>
+                        
+                        <!-- Thống kê -->
+                        <div class="row g-4 pt-2 border-top">
+                            <div class="col-4">
+                                <div class="stat-number">15+</div>
+                                <div class="stat-label">Loại bệnh phổ biến</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-number">98%</div>
+                                <div class="stat-label">Độ chính xác nhận diện</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-number">3 giây</div>
+                                <div class="stat-label">Thời gian có kết quả</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-lg rounded-4 overflow-hidden p-3 bg-white">
+                            <div class="position-relative rounded-3 overflow-hidden" style="height: 270px; background: #e5e7eb;">
+                                <img src="https://images.unsplash.com/photo-1592417817098-8f3d6910985b?auto=format&fit=crop&w=700&q=80" 
+                                     alt="Lá đậu chẩn đoán" class="w-100 h-100 object-fit-cover">
+                                <div class="position-absolute top-0 end-0 m-3 badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Đã quét AI
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 px-2">
+                                <div>
+                                    <div class="text-muted small">Tỷ lệ chẩn đoán</div>
+                                    <div class="fw-bold fs-5 text-dark">98% chính xác</div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge badge-severity-high px-3 py-1">Gỉ sắt (Rust)</span>
+                                    <div class="text-muted small mt-1 font-monospace">Uromyces appendiculatus</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Đối tác đồng hành -->
+                <div class="mt-5 pt-4 text-center border-top">
+                    <p class="text-muted small mb-3">Được tin dùng bởi hơn 50 hợp tác xã và hộ nông dân trên toàn quốc:</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-4 gap-md-5 text-secondary fw-semibold small">
+                        <span><i class="bi bi-check2-circle text-success me-1"></i> HTX Nông Xanh</span>
+                        <span><i class="bi bi-check2-circle text-success me-1"></i> Khuyến Nông An Giang</span>
+                        <span><i class="bi bi-check2-circle text-success me-1"></i> Trại Đậu Lâm Đồng</span>
+                        <span><i class="bi bi-check2-circle text-success me-1"></i> Nông Trại Việt</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BA BƯỚC ĐƠN GIẢN -->
+        <section id="steps" class="py-5" style="background-color: #f7f9f6;">
+            <div class="container py-lg-4">
+                <div class="text-center max-w-700 mx-auto mb-5">
+                    <h2 class="fw-bold fs-1 mb-2 text-dark">Ba bước để biết cây đậu của bạn có ổn không</h2>
+                    <p class="text-muted">Không cần đợi đến phân lập hay kiến thức kỹ thuật — mở điện thoại ra là bắt đầu ngay.</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="feature-step-card">
+                            <div class="step-badge step-1">1</div>
+                            <h4 class="fw-bold mb-2">Chụp hoặc tải ảnh lá đậu</h4>
+                            <p class="text-muted small mb-0">
+                                Đứng gần chùm lá có đốm hoặc vết vàng nghi ngờ, chụp rõ nét bề mặt lá dưới ánh sáng ban ngày.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-step-card">
+                            <div class="step-badge step-2">2</div>
+                            <h4 class="fw-bold mb-2">Hệ thống phân tích</h4>
+                            <p class="text-muted small mb-0">
+                                Mô hình AI thị giác máy tính quét sâu các vết bệnh, đối chiếu với cơ sở dữ liệu hàng chục nghìn mẫu lá.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-step-card">
+                            <div class="step-badge step-3">3</div>
+                            <h4 class="fw-bold mb-2">Nhận kết quả và xử lý</h4>
+                            <p class="text-muted small mb-0">
+                                Xem ngay tên bệnh, mức độ nguy cơ và phác đồ thuốc sinh học hoặc hóa học phù hợp cho vườn đậu.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THƯ VIỆN SÂU BỆNH -->
+        <section id="diseases" class="py-5">
+            <div class="container py-lg-4">
+                <div class="mb-5">
+                    <h2 class="fw-bold fs-1 mb-2 text-dark">Thư viện sâu bệnh thường gặp</h2>
+                    <p class="text-muted">Nhận diện sớm các tác nhân gây hại thường gặp trên cây đậu — từ nấm, vi khuẩn đến các loài côn trùng gây hại.</p>
+                </div>
+                
+                <div class="row g-4">
+                    <!-- Bệnh 1 -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card">
+                            <div class="disease-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1592417817098-8f3d6910985b?auto=format&fit=crop&w=500&q=80" alt="Bệnh gỉ sắt">
+                            </div>
+                            <h5 class="fw-bold mb-1">Bệnh gỉ sắt trên cây đậu</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                Vết bệnh màu nâu vàng rỉ sắt ở mặt dưới lá làm rụng lá sớm, giảm nghiêm trọng năng suất thu hoạch.
+                            </p>
+                            <div>
+                                <span class="badge-severity-high"><i class="bi bi-exclamation-triangle-fill me-1"></i> Mức độ: Cao</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bệnh 2 -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card">
+                            <div class="disease-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=500&q=80" alt="Phấn trắng">
+                            </div>
+                            <h5 class="fw-bold mb-1">Bệnh phấn trắng</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                Lớp bột trắng bao phủ mặt lá khiến lá quăn queo, giảm quang hợp và làm hạt đậu bị lép.
+                            </p>
+                            <div>
+                                <span class="badge-severity-med"><i class="bi bi-info-circle-fill me-1"></i> Mức độ: Trung bình</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bệnh 3 -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card">
+                            <div class="disease-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=500&q=80" alt="Đốm lá">
+                            </div>
+                            <h5 class="fw-bold mb-1">Bệnh đốm lá Cerco</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                Các đốm tròn màu nâu xám có quầng vàng xuất hiện rải rác trên phiến lá già sau các cơn mưa ẩm.
+                            </p>
+                            <div>
+                                <span class="badge-severity-med"><i class="bi bi-info-circle-fill me-1"></i> Mức độ: Trung bình</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bệnh 4 -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card">
+                            <div class="disease-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=500&q=80" alt="Rầy mềm">
+                            </div>
+                            <h5 class="fw-bold mb-1">Rầy mềm hại đọt đậu</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                Tập trung chích hút nhựa ở chồi non và hoa khiến hoa rụng nhiều, đồng thời truyền virus khảm lá.
+                            </p>
+                            <div>
+                                <span class="badge-severity-low"><i class="bi bi-shield-check me-1"></i> Mức độ: Nhẹ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bệnh 5 -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card">
+                            <div class="disease-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=500&q=80" alt="Sâu đục quả">
+                            </div>
+                            <h5 class="fw-bold mb-1">Sâu đục quả đậu</h5>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                Sâu non đục lỗ chui vào trong vỏ quả ăn hạt non, làm thối quả và giảm giá trị thương phẩm xuất khẩu.
+                            </p>
+                            <div>
+                                <span class="badge-severity-high"><i class="bi bi-exclamation-triangle-fill me-1"></i> Mức độ: Cao</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Xem thêm -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card justify-content-center align-items-center text-center p-4 border-dashed" style="border: 2px dashed #cbd5e1;">
+                            <div class="mb-3 text-success fs-1">
+                                <i class="bi bi-journal-plus"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Thư viện liên tục cập nhật</h5>
+                            <p class="text-muted small mb-4">Các chuyên gia nông nghiệp của chúng tôi bổ sung thêm 2 giống bệnh mới mỗi tháng.</p>
+                            <a th:href="@{/register}" class="btn btn-outline-bean btn-sm">Tham gia cùng chúng tôi</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ĐÁNH GIÁ TỪ NÔNG DÂN -->
+        <section id="feedback" class="py-5" style="background-color: #f7f9f6;">
+            <div class="container py-lg-4">
+                <div class="mb-5">
+                    <h2 class="fw-bold fs-1 mb-2 text-dark">Nông dân nói gì về Bean AI</h2>
+                    <p class="text-muted">Những phản hồi thực tế từ bà con nông dân và cán bộ nông nghiệp.</p>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="testimonial-card d-flex flex-column justify-content-between">
+                            <p class="fst-italic text-secondary mb-4">
+                                "Trước đây phải chờ cán bộ khuyến nông xuống tận vườn mới biết bệnh gì. Giờ chụp ảnh là có kết quả ngay, xử lý kịp trước khi lan rộng cả vườn."
+                            </p>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">TH</div>
+                                <div>
+                                    <div class="fw-bold small text-dark">Chú Thu Hà</div>
+                                    <div class="text-muted small" style="font-size: 0.8rem;">Nông trại Nông Xanh, Lâm Đồng</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="testimonial-card d-flex flex-column justify-content-between">
+                            <p class="fst-italic text-secondary mb-4">
+                                "Ứng dụng rất dễ dùng cho cả người lớn tuổi trong nhà. Chỉ cần chụp ảnh, không cần đọc nhiều chữ vẫn hiểu ngay tình trạng cây."
+                            </p>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">VP</div>
+                                <div>
+                                    <div class="fw-bold small text-dark">Anh Văn Phúc</div>
+                                    <div class="text-muted small" style="font-size: 0.8rem;">Chủ trại đậu, An Giang</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="testimonial-card d-flex flex-column justify-content-between">
+                            <p class="fst-italic text-secondary mb-4">
+                                "Chúng tôi dùng Bean AI để hướng dẫn nông dân trong vùng, giúp giảm hẳn số vườn bị mất mùa vì phát hiện bệnh trễ."
+                            </p>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">MT</div>
+                                <div>
+                                    <div class="fw-bold small text-dark">Kỹ sư Minh Trí</div>
+                                    <div class="text-muted small" style="font-size: 0.8rem;">Trung tâm khuyến nông</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CALL TO ACTION BANNER -->
+        <section class="py-5">
+            <div class="container py-lg-3">
+                <div class="cta-banner d-flex flex-column flex-lg-row align-items-center justify-content-between gap-4">
+                    <div>
+                        <h2 class="fw-bold mb-2">Bắt đầu bảo vệ vườn đậu của bạn ngay hôm nay</h2>
+                        <p class="mb-0 text-white-50">Miễn phí 20 lượt nhận diện đầu tiên, không cần thẻ tín dụng hay thủ tục phức tạp.</p>
+                    </div>
+                    <div>
+                        <a th:href="@{/register}" class="btn btn-cta shadow">
+                            Nhận diện miễn phí <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER CHUNG -->
+    <div th:replace="~{layout/base :: footer}"></div>
+
+</body>
+</html>
