@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Dịch vụ Cơ sở dữ liệu MySQL
+  mysql_db:
+    image: mysql:8.0
+    container_name: beanai_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-rootpassword}"
+      MYSQL_DATABASE: "${DB_NAME:-beanai_db}"
+      MYSQL_USER: "${DB_USER:-beanai_user}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-securepassword}"
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Dịch vụ Ứng dụng BeanAI (Spring Boot + AI PyTorch)
+  beanai_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: beanai_app
+    restart: always
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql_db:3306/${DB_NAME:-beanai_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&createDatabaseIfNotExist=true"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "${DB_ROOT_PASSWORD:-rootpassword}"
+      BEANAI_PYTHON_PATH: "python3"
+      BEANAI_SCRIPT_PATH: "/app/ai-service/predict.py"
+      BEANAI_MODEL_PATH: "/app/models/best.pt"
+      BEANAI_UPLOAD_DIR: "/app/uploads"
+      SERVER_PORT: "${SERVER_PORT:-8080}"
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    volumes:
+      - uploads_data:/app/uploads
+
+volumes:
+  mysql_data:
+    driver: local
+  uploads_data:
+    driver: local

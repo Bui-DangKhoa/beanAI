@@ -17,6 +17,9 @@ import java.util.List;
 public class PredictionResultDTO {
     private boolean success;
     private String error;
+    private String errorTitle;       // Tên lỗi (Lỗi gì)
+    private String errorLocation;    // Vị trí phát sinh (Ở đâu)
+    private String suggestion;       // Hướng xử lý đề xuất cho người dùng
     private Integer classId;
     private String className;
     private String vietnameseName;
@@ -24,8 +27,11 @@ public class PredictionResultDTO {
     private Double confidence;
     private String severity;
     private String severityCode;
+    private String category;
+    private String spreadConditions;
     private String symptoms;
     private String treatment;
+    private TreatmentProtocolDTO treatmentProtocol;
     private String imageUrl;
     private List<CandidateDTO> topCandidates;
 
@@ -38,5 +44,17 @@ public class PredictionResultDTO {
         private String className;
         private String vietnameseName;
         private Double confidence;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class TreatmentProtocolDTO {
+        private String culturalMeasures;
+        private String biologicalTreatment;
+        private String chemicalTreatment;
+        private String recoveryNutrition;
+        private String prevention;
     }
 }

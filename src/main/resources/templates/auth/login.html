@@ -40,8 +40,16 @@
                     </div>
                 </div>
 
+                <!-- THÔNG BÁO HẾT HẠN PHIÊN LÀM VIỆC (SESSION TIMEOUT / EXPIRED) -->
+                <div th:if="${param.timeout or param.expired}" class="alert alert-warning d-flex align-items-center rounded-3 py-2 px-3 small mb-3 border-0 bg-warning-subtle text-warning-emphasis">
+                    <i class="bi bi-clock-history fs-5 me-2"></i>
+                    <div>
+                        Phiên làm việc của bạn đã hết hạn do không hoạt động quá 30 phút hoặc được đăng nhập ở thiết bị khác. Vui lòng đăng nhập lại!
+                    </div>
+                </div>
+
                 <!-- FORM ĐĂNG NHẬP -->
-                <form th:action="@{/login}" method="post">
+                <form th:action="@{/login}" method="post" id="loginForm" novalidate>
                     <!-- Email đăng nhập -->
                     <div class="mb-3">
                         <label for="email" class="form-label small fw-semibold text-secondary">Địa chỉ Email</label>
@@ -49,6 +57,9 @@
                             <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
                             <input type="email" class="form-control border-start-0" id="email" name="email" 
                                    placeholder="nongdan@example.com" required autofocus>
+                        </div>
+                        <div class="text-danger small mt-1 d-none" id="emailFeedback">
+                            Vui lòng nhập địa chỉ email hợp lệ
                         </div>
                     </div>
 
@@ -66,13 +77,16 @@
                                 <i class="bi bi-eye" id="eyeIcon"></i>
                             </button>
                         </div>
+                        <div class="text-danger small mt-1 d-none" id="passwordFeedback">
+                            Vui lòng nhập mật khẩu của bạn
+                        </div>
                     </div>
 
                     <!-- Ghi nhớ đăng nhập -->
                     <div class="form-check mb-4">
                         <input class="form-check-input" type="checkbox" id="remember-me" name="remember-me">
                         <label class="form-check-label small text-secondary" for="remember-me">
-                            Ghi nhớ đăng nhập trên thiết bị này
+                            Ghi nhớ đăng nhập trên thiết bị này (7 ngày)
                         </label>
                     </div>
 
@@ -103,7 +117,7 @@
     <!-- FOOTER CHUNG -->
     <div th:replace="~{layout/base :: footer}"></div>
 
-    <!-- Script toggle ẩn/hiện mật khẩu -->
+    <!-- Script toggle ẩn/hiện mật khẩu & Client-side Validation -->
     <script>
         document.getElementById('togglePassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('password');
@@ -116,6 +130,53 @@
                 passwordInput.type = 'password';
                 eyeIcon.classList.remove('bi-eye-slash');
                 eyeIcon.classList.add('bi-eye');
+            }
+        });
+
+        // Client-side Validation cho Form Đăng nhập
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const emailFeedback = document.getElementById('emailFeedback');
+        const passwordFeedback = document.getElementById('passwordFeedback');
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function validateEmail() {
+            const val = emailInput.value.trim();
+            if (!val || !emailRegex.test(val)) {
+                emailInput.classList.add('is-invalid');
+                emailFeedback.classList.remove('d-none');
+                return false;
+            }
+            emailInput.classList.remove('is-invalid');
+            emailFeedback.classList.add('d-none');
+            return true;
+        }
+
+        function validatePassword() {
+            const val = passwordInput.value;
+            if (!val) {
+                passwordInput.classList.add('is-invalid');
+                passwordFeedback.classList.remove('d-none');
+                return false;
+            }
+            passwordInput.classList.remove('is-invalid');
+            passwordFeedback.classList.add('d-none');
+            return true;
+        }
+
+        emailInput.addEventListener('input', validateEmail);
+        passwordInput.addEventListener('input', validatePassword);
+
+        loginForm.addEventListener('submit', function (e) {
+            const isEmailValid = validateEmail();
+            const isPassValid = validatePassword();
+            if (!isEmailValid || !isPassValid) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isEmailValid) emailInput.focus();
+                else if (!isPassValid) passwordInput.focus();
             }
         });
     </script>

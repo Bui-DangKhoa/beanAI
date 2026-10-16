@@ -3,6 +3,7 @@ package com.example.beanai.service;
 import com.example.beanai.dto.RegisterDTO;
 import com.example.beanai.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,4 +25,14 @@ public interface UserService {
      * Tìm kiếm người dùng theo email
      */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Lấy danh sách toàn bộ người dùng (mới nhất trước) cho trang quản trị
+     */
+    List<User> findAllUsers();
+
+    /**
+     * Đếm tổng số người dùng trong hệ thống
+     */
+    long countUsers();
 }

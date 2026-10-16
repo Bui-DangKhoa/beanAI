@@ -43,7 +43,8 @@ public class SecurityConfig {
      */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -73,7 +74,8 @@ public class SecurityConfig {
                     "/images/**",
                     "/uploads/**",
                     "/favicon.ico",
-                    "/error"
+                    "/error",
+                    "/api/ai/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
@@ -94,7 +96,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/login?logout=true")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
-                .deleteCookies("JSESSIONID", "remember-me")
+                .deleteCookies("JSESSIONID", "BEANAI_SESSIONID", "remember-me")
                 .permitAll()
             )
             // Cấu hình ghi nhớ đăng nhập (Remember-me)
@@ -104,9 +106,26 @@ public class SecurityConfig {
                 .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 ngày
                 .userDetailsService(customUserDetailsService)
             )
-            // Bật bảo vệ CSRF (mặc định của Spring Security)
-            .csrf(Customizer.withDefaults());
+            // Cấu hình quản lý phiên làm việc (Session Management & Fixation Protection)
+            .sessionManagement(session -> session
+                .sessionFixation(fixation -> fixation.migrateSession())
+                .invalidSessionUrl("/login?timeout=true")
+                .maximumSessions(2)
+                .expiredUrl("/login?expired=true")
+            )
+            // Bỏ qua CSRF cho các API /api/ai/** để ứng dụng AJAX/Fetch hoạt động mượt mà
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/ai/**")
+            );
 
         return http.build();
+    }
+
+    /**
+     * Theo dõi vòng đời session để hỗ trợ quản trị phiên và giới hạn phiên đồng thời
+     */
+    @Bean
+    public org.springframework.security.web.session.HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new org.springframework.security.web.session.HttpSessionEventPublisher();
     }
 }

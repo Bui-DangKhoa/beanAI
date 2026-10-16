@@ -56,6 +56,10 @@ public class DashboardController {
             Optional<User> userOptional = userService.findByEmail(email);
             userOptional.ifPresent(user -> model.addAttribute("currentUser", user));
         }
+        // Lấy danh sách tài khoản thực tế từ CSDL (người mới đăng ký hiển thị đầu tiên)
+        model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("totalUsers", userService.countUsers());
+        model.addAttribute("totalDiagnoses", diagnosisHistoryRepository.count());
         model.addAttribute("pageTitle", "Trung tâm quản trị Admin - BeanAI");
         return "admin/dashboard";
     }

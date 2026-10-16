@@ -23,7 +23,7 @@
                 </div>
 
                 <!-- FORM ĐĂNG KÝ -->
-                <form th:action="@{/register}" th:object="${registerDTO}" method="post" novalidate>
+                <form th:action="@{/register}" th:object="${registerDTO}" method="post" id="registerForm" novalidate>
                     <!-- Họ và tên -->
                     <div class="mb-3">
                         <label for="fullName" class="form-label small fw-semibold text-secondary">Họ và tên của bạn</label>
@@ -37,6 +37,7 @@
                                    placeholder="Nguyễn Văn A" 
                                    required>
                         </div>
+                        <div class="text-danger small mt-1 d-none" id="fullNameClientFeedback"></div>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">
                             Họ và tên không hợp lệ
                         </div>
@@ -55,6 +56,7 @@
                                    placeholder="nongdan@example.com" 
                                    required>
                         </div>
+                        <div class="text-danger small mt-1 d-none" id="emailClientFeedback"></div>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
                             Email không hợp lệ
                         </div>
@@ -73,6 +75,7 @@
                                    placeholder="0912345678" 
                                    required>
                         </div>
+                        <div class="text-danger small mt-1 d-none" id="phoneClientFeedback"></div>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
                             Số điện thoại không hợp lệ
                         </div>
@@ -94,6 +97,7 @@
                                 <i class="bi bi-eye" id="eyeIcon"></i>
                             </button>
                         </div>
+                        <div class="text-danger small mt-1 d-none" id="passwordClientFeedback"></div>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
                             Mật khẩu không hợp lệ
                         </div>
@@ -112,6 +116,7 @@
                                    placeholder="Nhập lại chính xác mật khẩu trên" 
                                    required>
                         </div>
+                        <div class="text-danger small mt-1 d-none" id="confirmPasswordClientFeedback"></div>
                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">
                             Mật khẩu xác nhận không khớp
                         </div>
@@ -137,7 +142,7 @@
     <!-- FOOTER CHUNG -->
     <div th:replace="~{layout/base :: footer}"></div>
 
-    <!-- Toggle Password script -->
+    <!-- Toggle Password script & Client-side Validation -->
     <script>
         document.getElementById('togglePassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('password');
@@ -150,6 +155,137 @@
                 passwordInput.type = 'password';
                 eyeIcon.classList.remove('bi-eye-slash');
                 eyeIcon.classList.add('bi-eye');
+            }
+        });
+
+        // Client-side Validation cho Form Đăng ký
+        const form = document.getElementById('registerForm');
+        const fullName = document.getElementById('fullName');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+
+        const fullNameFeedback = document.getElementById('fullNameClientFeedback');
+        const emailFeedback = document.getElementById('emailClientFeedback');
+        const phoneFeedback = document.getElementById('phoneClientFeedback');
+        const passwordFeedback = document.getElementById('passwordClientFeedback');
+        const confirmPasswordFeedback = document.getElementById('confirmPasswordClientFeedback');
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phonePattern = /^0[0-9]{9}$/;
+
+        function showFieldError(input, feedbackEl, message) {
+            input.classList.add('is-invalid');
+            feedbackEl.textContent = message;
+            feedbackEl.classList.remove('d-none');
+        }
+
+        function clearFieldError(input, feedbackEl) {
+            input.classList.remove('is-invalid');
+            feedbackEl.textContent = '';
+            feedbackEl.classList.add('d-none');
+        }
+
+        function validateFullName() {
+            const val = fullName.value.trim();
+            if (!val) {
+                showFieldError(fullName, fullNameFeedback, 'Họ và tên không được để trống');
+                return false;
+            }
+            if (val.length > 100) {
+                showFieldError(fullName, fullNameFeedback, 'Họ và tên không được vượt quá 100 ký tự');
+                return false;
+            }
+            clearFieldError(fullName, fullNameFeedback);
+            return true;
+        }
+
+        function validateEmail() {
+            const val = email.value.trim();
+            if (!val) {
+                showFieldError(email, emailFeedback, 'Email không được để trống');
+                return false;
+            }
+            if (!emailPattern.test(val)) {
+                showFieldError(email, emailFeedback, 'Email không đúng định dạng (VD: nongdan@example.com)');
+                return false;
+            }
+            clearFieldError(email, emailFeedback);
+            return true;
+        }
+
+        function validatePhone() {
+            const val = phone.value.trim();
+            if (!val) {
+                showFieldError(phone, phoneFeedback, 'Số điện thoại không được để trống');
+                return false;
+            }
+            if (!phonePattern.test(val)) {
+                showFieldError(phone, phoneFeedback, 'Số điện thoại phải gồm đúng 10 chữ số và bắt đầu bằng số 0');
+                return false;
+            }
+            clearFieldError(phone, phoneFeedback);
+            return true;
+        }
+
+        function validatePassword() {
+            const val = password.value;
+            if (!val) {
+                showFieldError(password, passwordFeedback, 'Mật khẩu không được để trống');
+                return false;
+            }
+            if (val.length < 6) {
+                showFieldError(password, passwordFeedback, 'Mật khẩu phải có ít nhất 6 ký tự');
+                return false;
+            }
+            clearFieldError(password, passwordFeedback);
+            // Re-validate confirmPassword nếu confirmPassword đã có giá trị
+            if (confirmPassword.value) {
+                validateConfirmPassword();
+            }
+            return true;
+        }
+
+        function validateConfirmPassword() {
+            const val = confirmPassword.value;
+            if (!val) {
+                showFieldError(confirmPassword, confirmPasswordFeedback, 'Vui lòng xác nhận lại mật khẩu');
+                return false;
+            }
+            if (val !== password.value) {
+                showFieldError(confirmPassword, confirmPasswordFeedback, 'Mật khẩu xác nhận không khớp');
+                return false;
+            }
+            clearFieldError(confirmPassword, confirmPasswordFeedback);
+            return true;
+        }
+
+        // Bắt sự kiện khi người dùng gõ phím để phản hồi tức thời
+        fullName.addEventListener('input', validateFullName);
+        email.addEventListener('input', validateEmail);
+        phone.addEventListener('input', validatePhone);
+        password.addEventListener('input', validatePassword);
+        confirmPassword.addEventListener('input', validateConfirmPassword);
+
+        // Bắt sự kiện submit form
+        form.addEventListener('submit', function (e) {
+            const validName = validateFullName();
+            const validEmail = validateEmail();
+            const validPhone = validatePhone();
+            const validPass = validatePassword();
+            const validConfirm = validateConfirmPassword();
+
+            if (!validName || !validEmail || !validPhone || !validPass || !validConfirm) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Focus vào trường lỗi đầu tiên
+                if (!validName) fullName.focus();
+                else if (!validEmail) email.focus();
+                else if (!validPhone) phone.focus();
+                else if (!validPass) password.focus();
+                else if (!validConfirm) confirmPassword.focus();
             }
         });
     </script>

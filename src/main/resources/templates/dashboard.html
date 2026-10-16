@@ -40,7 +40,7 @@
             <!-- Thống kê nhanh của nông hộ -->
             <div class="row g-3 mb-4">
                 <div class="col-md-3 col-6">
-                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
                         <div class="d-flex align-items-center gap-3">
                             <div class="rounded-3 bg-success-subtle text-success p-3 fs-4">
                                 <i class="bi bi-camera-fill"></i>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
-                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
                         <div class="d-flex align-items-center gap-3">
                             <div class="rounded-3 bg-primary-subtle text-primary p-3 fs-4">
                                 <i class="bi bi-cpu-fill"></i>
@@ -66,20 +66,20 @@
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
-                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
                         <div class="d-flex align-items-center gap-3">
                             <div class="rounded-3 bg-warning-subtle text-warning p-3 fs-4">
                                 <i class="bi bi-journal-medical"></i>
                             </div>
                             <div>
                                 <div class="text-muted small">Số bệnh nhận diện</div>
-                                <div class="fs-4 fw-bold text-dark">11 bệnh</div>
+                                <div class="fs-4 fw-bold text-dark">11 bệnh & phác đồ</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
-                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
                         <div class="d-flex align-items-center gap-3">
                             <div class="rounded-3 bg-info-subtle text-info p-3 fs-4">
                                 <i class="bi bi-shield-check"></i>
@@ -104,7 +104,7 @@
                             <span class="badge bg-success-subtle text-success border border-success-subtle">Dataset Trained Model</span>
                         </div>
                         <p class="text-muted small mb-3">
-                            Hệ thống sử dụng trọng số mô hình tốt nhất <code>best.pt</code> đã được huấn luyện để phân tích và chỉ ra chính xác loại bệnh trên lá cây đậu.
+                            Hệ thống sử dụng trọng số mô hình tốt nhất <code>best.pt</code> đã được huấn luyện để phân tích và chỉ ra chính xác loại bệnh trên lá cây đậu cùng gợi ý phác đồ điều trị đa giai đoạn.
                         </p>
 
                         <!-- Khung kéo thả tải ảnh -->
@@ -143,41 +143,142 @@
                             <div class="text-muted small">Thời gian dự kiến: 1 - 2 giây</div>
                         </div>
 
-                        <!-- KHUNG HIỂN THỊ KẾT QUẢ PHÂN TÍCH CHI TIẾT (DYNAMIC RESULT) -->
+                        <!-- KHUNG HIỂN THỊ KẾT QUẢ PHÂN TÍCH CHI TIẾT & PHÁC ĐỒ ĐIỀU TRỊ (DYNAMIC RESULT) -->
                         <div id="resultArea" class="d-none p-4 rounded-4 border bg-white shadow-sm mt-3 border-success">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
+                            <!-- Tiêu đề chẩn đoán -->
+                            <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-2 pb-3 border-bottom">
                                 <div>
-                                    <span class="badge mb-1" id="resSeverityBadge">Mức độ</span>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="badge" id="resSeverityBadge">Mức độ</span>
+                                        <span class="badge bg-secondary-subtle text-secondary" id="resCategoryBadge">Phân loại</span>
+                                    </div>
                                     <h4 class="fw-bold text-dark mb-0" id="resDiseaseName">Tên Bệnh</h4>
-                                    <div class="text-muted small fst-italic" id="resScientificName">Tên khoa học</div>
+                                    <div class="text-muted small fst-italic mt-1" id="resScientificName">Tên khoa học</div>
                                 </div>
                                 <div class="text-end">
-                                    <div class="small text-muted">Độ tin cậy AI</div>
+                                    <div class="small text-muted">Độ tin cậy AI (best.pt)</div>
                                     <div class="fs-4 fw-bold text-success" id="resConfidence">98.5%</div>
+                                    <div class="progress mt-1" style="width: 120px; height: 6px;">
+                                        <div class="progress-bar bg-success" id="resProgressBar" role="progressbar" style="width: 98%;"></div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Thanh tiến trình độ tin cậy -->
-                            <div class="progress mb-3" style="height: 8px;">
-                                <div class="progress-bar bg-success" id="resProgressBar" role="progressbar" style="width: 98%;"></div>
-                            </div>
+                            <!-- Tabs chuyển đổi thông tin: Triệu chứng - Phác đồ 4 giai đoạn - Toa thuốc in -->
+                            <ul class="nav nav-pills mb-3 gap-2" id="resultTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active btn-sm rounded-pill" id="tab-protocol-btn" data-bs-toggle="tab" data-bs-target="#tab-protocol" type="button" role="tab">
+                                        <i class="bi bi-heart-pulse-fill me-1"></i> Phác đồ điều trị 4 bước
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link btn-sm rounded-pill" id="tab-symptoms-btn" data-bs-toggle="tab" data-bs-target="#tab-symptoms" type="button" role="tab">
+                                        <i class="bi bi-eye-fill me-1"></i> Triệu chứng & Sinh thái
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link btn-sm rounded-pill" id="tab-prescription-btn" data-bs-toggle="tab" data-bs-target="#tab-prescription" type="button" role="tab">
+                                        <i class="bi bi-file-earmark-medical me-1"></i> Toa thuốc & Phiếu in
+                                    </button>
+                                </li>
+                            </ul>
 
-                            <!-- Triệu chứng -->
-                            <div class="p-3 bg-light rounded-3 mb-3 border">
-                                <h6 class="fw-bold text-dark mb-1"><i class="bi bi-eye-fill text-primary me-2"></i> Triệu chứng nhận biết:</h6>
-                                <p class="text-secondary small mb-0" id="resSymptoms">Mô tả triệu chứng...</p>
-                            </div>
+                            <div class="tab-content" id="resultTabsContent">
+                                <!-- TAB 1: PHÁC ĐỒ ĐIỀU TRỊ 4 BƯỚC -->
+                                <div class="tab-pane fade show active" id="tab-protocol" role="tabpanel">
+                                    <div class="d-flex flex-column gap-3">
+                                        <!-- Bước 1: Canh tác & Cơ giới -->
+                                        <div class="p-3 rounded-3 border bg-light">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-warning text-dark rounded-pill">Bước 1</span>
+                                                <strong class="text-dark small"><i class="bi bi-scissors text-warning me-1"></i> Biện pháp Canh tác & Cơ học khẩn cấp:</strong>
+                                            </div>
+                                            <p class="text-secondary small mb-0 ps-4" id="resCultural">Đang tải...</p>
+                                        </div>
 
-                            <!-- Hướng dẫn điều trị & Thuốc -->
-                            <div class="p-3 bg-success-subtle rounded-3 mb-3 border border-success-subtle">
-                                <h6 class="fw-bold text-success-emphasis mb-1"><i class="bi bi-heart-pulse-fill text-danger me-2"></i> Phác đồ điều trị & Thuốc đề xuất:</h6>
-                                <p class="text-success-emphasis small mb-0" id="resTreatment">Hướng dẫn điều trị...</p>
-                            </div>
+                                        <!-- Bước 2: Sinh học & Hữu cơ -->
+                                        <div class="p-3 rounded-3 border bg-success-subtle border-success-subtle">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-success rounded-pill">Bước 2</span>
+                                                <strong class="text-success-emphasis small"><i class="bi bi-shield-shaded text-success me-1"></i> Phác đồ Sinh học & Hữu cơ an toàn:</strong>
+                                            </div>
+                                            <p class="text-success-emphasis small mb-0 ps-4" id="resBiological">Đang tải...</p>
+                                        </div>
 
-                            <!-- Top các khả năng khác -->
-                            <div id="topCandidatesBox" class="small text-muted border-top pt-2">
-                                <span class="fw-bold">Các khả năng liên quan khác:</span>
-                                <div id="candidatesList" class="d-flex flex-wrap gap-2 mt-1"></div>
+                                        <!-- Bước 3: Thuốc hóa học đặc trị -->
+                                        <div class="p-3 rounded-3 border bg-danger-subtle border-danger-subtle">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-danger rounded-pill">Bước 3</span>
+                                                <strong class="text-danger-emphasis small"><i class="bi bi-capsule text-danger me-1"></i> Thuốc Hóa học đặc trị & Liều lượng:</strong>
+                                            </div>
+                                            <p class="text-danger-emphasis small mb-0 ps-4" id="resChemical">Đang tải...</p>
+                                        </div>
+
+                                        <!-- Bước 4: Phục hồi dinh dưỡng & Phòng ngừa -->
+                                        <div class="p-3 rounded-3 border bg-info-subtle border-info-subtle">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-info text-dark rounded-pill">Bước 4</span>
+                                                <strong class="text-info-emphasis small"><i class="bi bi-arrow-repeat text-info me-1"></i> Phục hồi Dinh dưỡng & Phòng ngừa tái phát:</strong>
+                                            </div>
+                                            <div class="small text-info-emphasis ps-4">
+                                                <div class="mb-1"><strong>Phục hồi:</strong> <span id="resRecovery">Đang tải...</span></div>
+                                                <div><strong>Phòng ngừa:</strong> <span id="resPrevention">Đang tải...</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- TAB 2: TRIỆU CHỨNG & SINH THÁI -->
+                                <div class="tab-pane fade" id="tab-symptoms" role="tabpanel">
+                                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-eye-fill text-primary me-2"></i> Triệu chứng nhận biết chi tiết:</h6>
+                                        <p class="text-secondary small mb-0" id="resSymptoms">Mô tả triệu chứng...</p>
+                                    </div>
+
+                                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-cloud-sun text-warning me-2"></i> Điều kiện thời tiết & Sinh thái phát sinh:</h6>
+                                        <p class="text-secondary small mb-0" id="resSpreadConditions">Điều kiện phát sinh...</p>
+                                    </div>
+
+                                    <!-- Top các khả năng khác -->
+                                    <div id="topCandidatesBox" class="small text-muted border-top pt-2">
+                                        <span class="fw-bold">Các khả năng chẩn đoán liên quan khác:</span>
+                                        <div id="candidatesList" class="d-flex flex-wrap gap-2 mt-1"></div>
+                                    </div>
+                                </div>
+
+                                <!-- TAB 3: TOA THUỐC & PHIẾU IN -->
+                                <div class="tab-pane fade" id="tab-prescription" role="tabpanel">
+                                    <div id="printablePrescription" class="p-3 border rounded-3 bg-white mb-3">
+                                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                                            <div>
+                                                <div class="fw-bold text-success fs-6"><i class="bi bi-flower2"></i> BeanAI - Phiếu Phác Đồ Điều Trị Cây Đậu</div>
+                                                <div class="text-muted small" id="prescDate">Ngày chẩn đoán: --/--/----</div>
+                                            </div>
+                                            <div class="badge bg-success-subtle text-success">Đã xác thực AI best.pt</div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <strong>Bệnh chẩn đoán:</strong> <span id="prescDiseaseName" class="fw-bold text-dark">--</span> 
+                                            (<span id="prescScientific" class="fst-italic">--</span>)
+                                        </div>
+                                        <div class="mb-2 small">
+                                            <strong>Phác đồ tóm tắt:</strong>
+                                            <div id="prescSummary" class="p-2 bg-light rounded mt-1">--</div>
+                                        </div>
+                                        <div class="small text-muted fst-italic">
+                                            * Lưu ý: Khi mua thuốc tại đại lý bảo vệ thực vật, hãy hỏi đúng tên hoạt chất đã đề xuất ở trên để đảm bảo hiệu lực dập dịch tốt nhất.
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary-bean btn-sm" onclick="printPrescription()">
+                                            <i class="bi bi-printer me-1"></i> In phác đồ điều trị
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="copyPrescription()">
+                                            <i class="bi bi-clipboard me-1"></i> Sao chép phác đồ
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -186,56 +287,59 @@
                 <!-- Cột thông tin 11 nhãn bệnh được mô hình best.pt hỗ trợ -->
                 <div class="col-lg-5">
                     <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
                             <h5 class="fw-bold mb-0 text-dark">
                                 <i class="bi bi-list-check text-success me-2"></i> 11 Bệnh mô hình best.pt nhận diện
                             </h5>
                             <span class="badge bg-light text-secondary border">11 Classes</span>
                         </div>
-                        <p class="text-muted small mb-3">Mô hình đã được train nhận diện chuẩn xác các phân loại sau:</p>
+                        <p class="text-muted small mb-3">
+                            Bấm vào bất kỳ loại bệnh nào dưới đây để xem nhanh triệu chứng & phác đồ điều trị chuẩn:
+                        </p>
                         
-                        <div class="list-group list-group-flush small" style="max-height: 480px; overflow-y: auto;">
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                        <div class="list-group list-group-flush small" id="diseaseKnowledgeList" style="max-height: 520px; overflow-y: auto;">
+                            <!-- Danh sách bệnh có thể click xem chi tiết -->
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(3)">
                                 <div><strong class="text-dark">1. Lá đậu khỏe mạnh</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Fresh Leaf</span></div>
                                 <span class="badge badge-severity-low">An toàn</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(8)">
                                 <div><strong class="text-dark">2. Bệnh gỉ sắt</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Rust (Uromyces)</span></div>
                                 <span class="badge badge-severity-high">Nguy hiểm</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(1)">
                                 <div><strong class="text-dark">3. Bệnh thán thư</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Anthracnose</span></div>
                                 <span class="badge badge-severity-high">Nguy hiểm</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(0)">
                                 <div><strong class="text-dark">4. Bệnh đốm góc lá</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Angular Leaf Spot</span></div>
                                 <span class="badge badge-severity-med">Trung bình</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(5)">
                                 <div><strong class="text-dark">5. Đốm cháy vi khuẩn quầng vàng</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Halo Blight</span></div>
                                 <span class="badge badge-severity-high">Nguy hiểm</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(6)">
                                 <div><strong class="text-dark">6. Bệnh virus khảm lá</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Mosaic Virus (BCMV)</span></div>
                                 <span class="badge badge-severity-high">Nguy hiểm</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(10)">
                                 <div><strong class="text-dark">7. Bệnh virus khảm vàng</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Yellow Mosaic (MYMV)</span></div>
                                 <span class="badge badge-severity-high">Nguy hiểm</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(2)">
                                 <div><strong class="text-dark">8. Bệnh đốm lá Cercospora</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Cercospora Leaf Spot</span></div>
                                 <span class="badge badge-severity-med">Trung bình</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(4)">
                                 <div><strong class="text-dark">9. Nấm bệnh thân lá</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Fungi Pathogens</span></div>
                                 <span class="badge badge-severity-med">Trung bình</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(9)">
                                 <div><strong class="text-dark">10. Sâu khoang ăn lá</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Tobacco Caterpillar</span></div>
                                 <span class="badge badge-severity-high">Sâu hại</span>
                             </div>
-                            <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="list-group-item list-group-item-action px-2 py-2 d-flex justify-content-between align-items-center rounded-3 mb-1" style="cursor: pointer;" onclick="openDiseaseModal(7)">
                                 <div><strong class="text-dark">11. Thiếu hụt dinh dưỡng Kali</strong> <span class="text-muted d-block" style="font-size:0.75rem;">Potassium Deficiency</span></div>
                                 <span class="badge badge-severity-low">Sinh lý</span>
                             </div>
@@ -261,7 +365,8 @@
                                 <th>Bệnh chẩn đoán</th>
                                 <th>Độ tin cậy</th>
                                 <th>Mức độ</th>
-                                <th>Biện pháp xử lý tóm tắt</th>
+                                <th>Phác đồ xử lý</th>
+                                <th class="text-end">Chi tiết</th>
                             </tr>
                         </thead>
                         <tbody id="historyTableBody">
@@ -282,13 +387,20 @@
                                     <span th:class="${item.severityCode == 'HIGH' ? 'badge badge-severity-high' : (item.severityCode == 'SAFE' ? 'badge badge-severity-low' : 'badge badge-severity-med')}"
                                           th:text="${item.severity}">Cao</span>
                                 </td>
-                                <td class="small text-secondary text-truncate" style="max-width: 280px;" th:text="${item.treatment}">
+                                <td class="small text-secondary text-truncate" style="max-width: 250px;" th:text="${item.treatment}">
                                     Phun thuốc...
+                                </td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-bean rounded-pill"
+                                            th:attr="data-name=${item.vietnameseName}, data-scientific=${item.scientificName}, data-conf=${item.confidence}, data-sev=${item.severity}, data-sevcode=${item.severityCode}, data-img=@{${item.imagePath}}, data-symptoms=${item.symptoms}, data-treatment=${item.treatment}"
+                                            onclick="openHistoryDetailModal(this)">
+                                        <i class="bi bi-file-medical me-1"></i> Xem phác đồ
+                                    </button>
                                 </td>
                             </tr>
                             <!-- Khi chưa có lượt chẩn đoán nào -->
                             <tr th:if="${diagnosisList == null or #lists.isEmpty(diagnosisList)}" id="emptyRow">
-                                <td colspan="6" class="text-center py-4 text-muted">
+                                <td colspan="7" class="text-center py-4 text-muted">
                                     <i class="bi bi-inbox fs-2 d-block mb-1 text-secondary"></i>
                                     Chưa có lượt chẩn đoán nào trong tài khoản. Hãy tải lên bức ảnh đầu tiên để trải nghiệm mô hình AI!
                                 </td>
@@ -300,6 +412,172 @@
         </div>
     </main>
 
+    <!-- MODAL TRA CỨU BỆNH & PHÁC ĐỒ ĐIỀU TRỊ 11 CLASSES -->
+    <div class="modal fade" id="diseaseDetailModal" tabindex="-1" aria-labelledby="diseaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom pb-3">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge" id="modalSeverityBadge">Mức độ</span>
+                            <span class="badge bg-secondary-subtle text-secondary" id="modalCategoryBadge">Phân loại</span>
+                        </div>
+                        <h4 class="modal-title fw-bold text-dark" id="modalDiseaseName">Tên Bệnh</h4>
+                        <div class="text-muted small fst-italic" id="modalScientificName">Tên khoa học</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Triệu chứng -->
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-eye-fill text-primary me-2"></i> Triệu chứng nhận biết:</h6>
+                        <p class="text-secondary small mb-0" id="modalSymptoms">...</p>
+                    </div>
+
+                    <!-- Điều kiện thời tiết -->
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-cloud-sun text-warning me-2"></i> Điều kiện thời tiết & Lây lan:</h6>
+                        <p class="text-secondary small mb-0" id="modalConditions">...</p>
+                    </div>
+
+                    <!-- Phác đồ 4 bước chi tiết -->
+                    <h6 class="fw-bold text-dark mb-2"><i class="bi bi-heart-pulse-fill text-danger me-2"></i> Phác đồ điều trị 4 giai đoạn chuẩn Nông nghiệp:</h6>
+                    <div class="d-flex flex-column gap-2 mb-3">
+                        <div class="p-3 bg-warning-subtle rounded-3 border border-warning-subtle">
+                            <strong class="text-dark small d-block mb-1">1. Canh tác & Cơ giới khẩn cấp:</strong>
+                            <p class="text-dark small mb-0" id="modalCultural">...</p>
+                        </div>
+                        <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle">
+                            <strong class="text-success-emphasis small d-block mb-1">2. Biện pháp Sinh học & Hữu cơ:</strong>
+                            <p class="text-success-emphasis small mb-0" id="modalBiological">...</p>
+                        </div>
+                        <div class="p-3 bg-danger-subtle rounded-3 border border-danger-subtle">
+                            <strong class="text-danger-emphasis small d-block mb-1">3. Thuốc Hóa học đặc trị & Liều dùng:</strong>
+                            <p class="text-danger-emphasis small mb-0" id="modalChemical">...</p>
+                        </div>
+                        <div class="p-3 bg-info-subtle rounded-3 border border-info-subtle">
+                            <strong class="text-info-emphasis small d-block mb-1">4. Dinh dưỡng phục hồi & Phòng tái phát:</strong>
+                            <div class="small text-info-emphasis">
+                                <div class="mb-1"><strong>Phục hồi:</strong> <span id="modalRecovery">...</span></div>
+                                <div><strong>Phòng ngừa:</strong> <span id="modalPrevention">...</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary-bean btn-sm rounded-pill" onclick="copyModalProtocol()">
+                        <i class="bi bi-clipboard me-1"></i> Sao chép phác đồ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XEM LẠI LỊCH SỬ CHẨN ĐOÁN -->
+    <div class="modal fade" id="historyViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom pb-3">
+                    <div>
+                        <span class="badge mb-1" id="histSevBadge">Mức độ</span>
+                        <h4 class="modal-title fw-bold text-dark" id="histTitle">Bệnh chẩn đoán</h4>
+                        <div class="text-muted small fst-italic" id="histScientific">Tên khoa học</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4 text-center">
+                            <img id="histImg" src="#" alt="Lá chẩn đoán" class="img-fluid rounded-3 shadow-sm border object-fit-cover" style="max-height: 200px; width: 100%;">
+                            <div class="small text-muted mt-2">Độ tin cậy AI: <strong class="text-success" id="histConfidence">98%</strong></div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="p-3 bg-light rounded-3 border mb-3">
+                                <h6 class="fw-bold text-dark mb-1"><i class="bi bi-eye-fill text-primary me-2"></i> Triệu chứng ghi nhận:</h6>
+                                <p class="text-secondary small mb-0" id="histSymptoms">...</p>
+                            </div>
+                            <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle">
+                                <h6 class="fw-bold text-success-emphasis mb-1"><i class="bi bi-heart-pulse-fill text-danger me-2"></i> Phác đồ điều trị đề xuất:</h6>
+                                <p class="text-success-emphasis small mb-0" id="histTreatment">...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL THÔNG BÁO SỰ CỐ / LỖI CHUYÊN NGHIỆP (KHÔNG HIỂN THỊ MÃ CODE LỖI) -->
+    <div class="modal fade" id="appErrorModal" tabindex="-1" aria-labelledby="appErrorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 bg-danger-subtle text-danger-emphasis py-3 rounded-top-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-danger text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                            <i class="bi bi-exclamation-triangle-fill fs-6"></i>
+                        </div>
+                        <div>
+                            <h6 class="modal-title fw-bold mb-0" id="errorModalTitle">Thông Báo Sự Cố Phân Tích</h6>
+                            <small class="text-danger-emphasis opacity-75">Hệ thống hỗ trợ chẩn đoán Bean AI</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Lỗi gì -->
+                    <div class="mb-3">
+                        <div class="text-muted small fw-semibold text-uppercase mb-1">
+                            <i class="bi bi-x-circle-fill text-danger me-1"></i> Sự cố gặp phải (Lỗi gì):
+                        </div>
+                        <div class="p-3 bg-light rounded-3 border fw-semibold text-dark" id="errorModalWhat">
+                            Nội dung lỗi
+                        </div>
+                    </div>
+
+                    <!-- Ở đâu -->
+                    <div class="mb-3">
+                        <div class="text-muted small fw-semibold text-uppercase mb-1">
+                            <i class="bi bi-geo-alt-fill text-warning me-1"></i> Vị trí phát sinh (Ở đâu):
+                        </div>
+                        <div class="p-2 px-3 bg-light rounded-3 border small text-secondary" id="errorModalWhere">
+                            Vị trí xảy ra
+                        </div>
+                    </div>
+
+                    <!-- Hướng khắc phục -->
+                    <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle">
+                        <div class="text-success-emphasis small fw-bold mb-1">
+                            <i class="bi bi-lightbulb-fill text-success me-1"></i> Hướng dẫn khắc phục gợi ý:
+                        </div>
+                        <div class="small text-success-emphasis" id="errorModalSuggestion">
+                            Cách giải quyết
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 pb-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill btn-sm px-4" data-bs-dismiss="modal">Đã hiểu & Thử lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST THÔNG BÁO NHANH -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+        <div id="actionToast" class="toast align-items-center text-white bg-success border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
+                    <span id="toastMessage">Thao tác thành công!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER CHUNG -->
     <div th:replace="~{layout/base :: footer}"></div>
 
@@ -307,7 +585,7 @@
     <input type="hidden" id="csrfToken" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     <input type="hidden" id="csrfHeader" th:value="${_csrf.headerName}" />
 
-    <!-- JavaScript xử lý tương tác Upload & Gọi API Model best.pt -->
+    <!-- JavaScript xử lý tương tác Upload, AI Model best.pt & Tra cứu phác đồ -->
     <script>
         const fileUpload = document.getElementById('fileUpload');
         const dropArea = document.getElementById('dropArea');
@@ -323,6 +601,26 @@
         const statScanCount = document.getElementById('statScanCount');
 
         let selectedFile = null;
+        let currentPredictionData = null;
+        let diseaseKnowledgeCache = {};
+
+        // Tải trước danh mục 11 bệnh và phác đồ điều trị
+        async function fetchDiseasesKnowledge() {
+            try {
+                const res = await fetch('/api/ai/diseases');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.diseases) {
+                        data.diseases.forEach(d => {
+                            diseaseKnowledgeCache[d.class_id] = d;
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not preload disease knowledge:', e);
+            }
+        }
+        fetchDiseasesKnowledge();
 
         // Xử lý khi chọn file qua input
         fileUpload.addEventListener('change', function(e) {
@@ -347,7 +645,96 @@
             }
         });
 
+        // Hiển thị thông báo Toast nhanh
+        function showToastNotification(message) {
+            const toastEl = document.getElementById('actionToast');
+            document.getElementById('toastMessage').textContent = message;
+            const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+            toast.show();
+        }
+
+        // Hiển thị Modal sự cố chi tiết: RÕ RÀNG LỖI GÌ, Ở ĐÂU, HƯỚNG KHẮC PHỤC
+        // Tuyệt đối không hiển thị lỗi code (như JSON.parse, syntax error...)
+        function showAppError({ title, what, where, suggestion }) {
+            let sanitizedWhat = what || 'Không thể hoàn tất tiến trình phân tích ảnh';
+            let sanitizedWhere = where || 'Hệ thống chẩn đoán Bean AI';
+            let sanitizedSuggestion = suggestion || 'Vui lòng kiểm tra lại hình ảnh và thử lại.';
+
+            // Lọc và chuyển đổi triệt để các chuỗi lỗi code kỹ thuật nếu có
+            const technicalPatterns = [
+                /json\.parse/i,
+                /unexpected end/i,
+                /syntaxerror/i,
+                /typeerror/i,
+                /failed to fetch/i,
+                /networkerror/i,
+                /column \d+/i,
+                /line \d+/i,
+                /traceback/i,
+                /exception/i,
+                /nullpointer/i,
+                /status code \d+/i,
+                /internal server error/i
+            ];
+
+            const isTechnical = technicalPatterns.some(pattern => pattern.test(sanitizedWhat));
+            if (isTechnical) {
+                if (/failed to fetch|networkerror/i.test(sanitizedWhat)) {
+                    sanitizedWhat = 'Mất kết nối hoặc dịch vụ máy chủ BeanAI tạm thời không phản hồi.';
+                    sanitizedWhere = 'Đường truyền mạng hoặc máy chủ ứng dụng (Cổng 8080)';
+                    sanitizedSuggestion = 'Vui lòng kiểm tra lại kết nối mạng hoặc đảm bảo máy chủ Spring Boot đang chạy ổn định.';
+                } else if (/json\.parse|unexpected end/i.test(sanitizedWhat)) {
+                    sanitizedWhat = 'Dữ liệu máy chủ phản hồi bị đứt đoạn (thường xảy ra khi ảnh vượt quá dung lượng cho phép hoặc lỗi kết nối).';
+                    sanitizedWhere = 'Cổng tiếp nhận tệp dữ liệu máy chủ (Web Server Upload Gate)';
+                    sanitizedSuggestion = 'Vui lòng chọn ảnh có dung lượng dưới 25MB hoặc nén nhẹ ảnh trước khi tải lên phân tích.';
+                } else {
+                    sanitizedWhat = 'Hệ thống gặp sự cố trong quá trình bóc tách và phân tích ảnh lá cây.';
+                    sanitizedWhere = 'Tiến trình suy luận mô hình AI (ai-service/predict.py - best.pt)';
+                    sanitizedSuggestion = 'Vui lòng chụp lại ảnh lá đậu ở cự ly gần hơn, rõ nét và đủ ánh sáng.';
+                }
+            }
+
+            document.getElementById('errorModalTitle').textContent = title || 'Thông Báo Sự Cố Phân Tích';
+            document.getElementById('errorModalWhat').textContent = sanitizedWhat;
+            document.getElementById('errorModalWhere').textContent = sanitizedWhere;
+            document.getElementById('errorModalSuggestion').textContent = sanitizedSuggestion;
+
+            const modalEl = document.getElementById('appErrorModal');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+
         function handleFile(file) {
+            if (!file) return;
+
+            // 1. Kiểm định định dạng ảnh
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/bmp'];
+            const validExtensions = /\.(jpg|jpeg|png|webp|bmp)$/i;
+            if (!validTypes.includes(file.type) && !validExtensions.test(file.name)) {
+                showAppError({
+                    title: 'Định dạng tệp không được hỗ trợ',
+                    what: 'Tệp được chọn không phải là tệp hình ảnh lá cây hợp lệ (.JPG, .PNG, .WEBP).',
+                    where: 'Bộ phận kiểm tra tệp trên trình duyệt của bạn (Client File Validator)',
+                    suggestion: 'Vui lòng chỉ tải lên các bức ảnh chụp lá cây đậu có đuôi .jpg, .png hoặc .webp.'
+                });
+                fileUpload.value = '';
+                return;
+            }
+
+            // 2. Kiểm định dung lượng ảnh (Tối đa 25MB)
+            const maxSizeBytes = 25 * 1024 * 1024;
+            if (file.size > maxSizeBytes) {
+                const currentMB = (file.size / (1024 * 1024)).toFixed(2);
+                showAppError({
+                    title: 'Dung lượng ảnh vượt quá giới hạn',
+                    what: `Ảnh của bạn có kích thước ${currentMB} MB, vượt quá dung lượng tối đa cho phép là 25 MB.`,
+                    where: 'Bộ phận kiểm tra dung lượng trên trình duyệt của bạn',
+                    suggestion: 'Vui lòng giảm dung lượng ảnh hoặc nén ảnh dưới 25MB trước khi tiến hành phân tích.'
+                });
+                fileUpload.value = '';
+                return;
+            }
+
             selectedFile = file;
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -363,7 +750,12 @@
         // Bấm nút phân tích ảnh với mô hình best.pt
         btnAnalyze.addEventListener('click', async function() {
             if (!selectedFile) {
-                alert('Vui lòng chọn hoặc kéo thả ảnh lá đậu trước!');
+                showAppError({
+                    title: 'Chưa có ảnh lá đậu',
+                    what: 'Bạn chưa chọn hoặc kéo thả bức ảnh lá đậu nào vào khung phân tích.',
+                    where: 'Khu vực tải ảnh chẩn đoán (Upload Box)',
+                    suggestion: 'Hãy bấm vào khung "Duyệt ảnh từ máy tính / điện thoại" hoặc kéo thả ảnh lá đậu vào đây.'
+                });
                 return;
             }
 
@@ -390,14 +782,70 @@
                     body: formData
                 });
 
-                const data = await response.json();
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (jsonErr) {
+                    data = null;
+                }
+
                 loadingArea.classList.add('d-none');
                 btnAnalyze.disabled = false;
 
-                if (!data.success) {
-                    alert('Lỗi: ' + (data.error || 'Không thể phân tích ảnh'));
+                // Xử lý khi HTTP trả về mã lỗi (Status >= 400)
+                if (!response.ok) {
+                    if (response.status === 413 || (data && data.errorTitle && data.errorTitle.includes('dung lượng'))) {
+                        showAppError({
+                            title: 'Ảnh vượt quá dung lượng cho phép',
+                            what: (data && data.error) ? data.error : 'Tệp ảnh bạn tải lên vượt quá giới hạn tiếp nhận của máy chủ (tối đa 25MB).',
+                            where: (data && data.errorLocation) ? data.errorLocation : 'Cổng tiếp nhận tệp của máy chủ (Web Server Upload Gate)',
+                            suggestion: (data && data.suggestion) ? data.suggestion : 'Vui lòng chọn ảnh nhẹ hơn hoặc nén giảm kích thước ảnh trước khi tải lên.'
+                        });
+                        return;
+                    }
+
+                    if (response.status === 403 || response.status === 401) {
+                        showAppError({
+                            title: 'Phiên làm việc hết hạn',
+                            what: 'Phiên đăng nhập của bạn đã hết hạn hoặc chưa được cấp quyền thực hiện.',
+                            where: 'Cổng xác thực bảo mật hệ thống (Spring Security Gateway)',
+                            suggestion: 'Vui lòng làm mới trang (F5) hoặc đăng nhập lại tài khoản để tiếp tục.'
+                        });
+                        return;
+                    }
+
+                    showAppError({
+                        title: (data && data.errorTitle) ? data.errorTitle : 'Máy chủ không thể hoàn tất phân tích',
+                        what: (data && data.error) ? data.error : 'Máy chủ gặp sự cố trong quá trình tiếp nhận tệp ảnh (Mã trạng thái: ' + response.status + ').',
+                        where: (data && data.errorLocation) ? data.errorLocation : 'Máy chủ dịch vụ Bean AI (Backend Core Service)',
+                        suggestion: (data && data.suggestion) ? data.suggestion : 'Vui lòng thử lại với một ảnh lá cây khác hoặc tải lại trang.'
+                    });
                     return;
                 }
+
+                // Nếu response HTTP OK nhưng dữ liệu JSON không đọc được
+                if (!data) {
+                    showAppError({
+                        title: 'Dữ liệu phản hồi không đúng chuẩn',
+                        what: 'Không thể giải mã kết quả phân tích từ máy chủ trả về.',
+                        where: 'Bộ phân giải dữ liệu trình duyệt (Response Parser)',
+                        suggestion: 'Vui lòng thử gửi lại yêu cầu hoặc kiểm tra lại ảnh lá đậu.'
+                    });
+                    return;
+                }
+
+                // Nếu backend trả về kết quả không thành công
+                if (!data.success) {
+                    showAppError({
+                        title: data.errorTitle || 'Không thể nhận diện bệnh trên lá đậu',
+                        what: data.error || 'Mô hình AI không tìm thấy đặc trưng bệnh học rõ ràng trên mẫu lá này.',
+                        where: data.errorLocation || 'Mô hình AI nhận diện (best.pt - YOLOv8-26)',
+                        suggestion: data.suggestion || 'Hãy chụp lại ảnh lá đậu ở cự ly gần, đủ ánh sáng và lấy nét rõ vết đốm lá.'
+                    });
+                    return;
+                }
+
+                currentPredictionData = data;
 
                 // Hiển thị kết quả ra màn hình
                 displayResult(data);
@@ -405,30 +853,70 @@
                 // Thêm vào bảng lịch sử
                 addToHistoryTable(data);
 
-            } catch (error) {
+            } catch (networkError) {
                 loadingArea.classList.add('d-none');
                 btnAnalyze.disabled = false;
-                alert('Đã xảy ra lỗi kết nối tới máy chủ AI: ' + error.message);
+
+                // Xử lý lỗi ngoại lệ mạng / fetch, tuyệt đối không in error.message lỗi code
+                let errorWhat = 'Không thể kết nối đến máy chủ BeanAI hoặc kết nối bị ngắt quãng.';
+                let errorWhere = 'Kết nối mạng giữa trình duyệt và máy chủ (Network Transport)';
+                let errorSuggestion = 'Vui lòng kiểm tra lại đường truyền mạng hoặc đảm bảo máy chủ BeanAI (cổng 8080) đang hoạt động.';
+
+                if (networkError.name === 'TypeError' && networkError.message && networkError.message.toLowerCase().includes('failed to fetch')) {
+                    errorWhat = 'Máy chủ ứng dụng BeanAI đang tạm dừng hoặc không thể phản hồi yêu cầu kết nối.';
+                    errorWhere = 'Địa chỉ máy chủ cục bộ http://127.0.0.1:8080';
+                    errorSuggestion = 'Vui lòng kiểm tra lại tiến trình máy chủ hoặc khởi động lại ứng dụng.';
+                }
+
+                showAppError({
+                    title: 'Lỗi Kết Nối Máy Chủ',
+                    what: errorWhat,
+                    where: errorWhere,
+                    suggestion: errorSuggestion
+                });
             }
         });
 
         function displayResult(data) {
             document.getElementById('resDiseaseName').textContent = data.vietnameseName;
             document.getElementById('resScientificName').textContent = data.scientificName;
+            document.getElementById('resCategoryBadge').textContent = data.category || 'Nấm bệnh';
             document.getElementById('resConfidence').textContent = data.confidence + '%';
             document.getElementById('resProgressBar').style.width = data.confidence + '%';
-            document.getElementById('resSymptoms').textContent = data.symptoms;
-            document.getElementById('resTreatment').textContent = data.treatment;
 
+            // Mức độ nguy hiểm
             const badge = document.getElementById('resSeverityBadge');
             badge.textContent = 'Mức độ: ' + data.severity;
             if (data.severityCode === 'HIGH') {
-                badge.className = 'badge badge-severity-high mb-1';
+                badge.className = 'badge badge-severity-high';
             } else if (data.severityCode === 'SAFE') {
-                badge.className = 'badge badge-severity-low mb-1';
+                badge.className = 'badge badge-severity-low';
             } else {
-                badge.className = 'badge badge-severity-med mb-1';
+                badge.className = 'badge badge-severity-med';
             }
+
+            // Triệu chứng & Điều kiện phát sinh
+            document.getElementById('resSymptoms').textContent = data.symptoms;
+            document.getElementById('resSpreadConditions').textContent = data.spreadConditions || 'Đang theo dõi điều kiện thời tiết.';
+
+            // Phác đồ 4 bước
+            const proto = data.treatmentProtocol || {};
+            document.getElementById('resCultural').textContent = proto.culturalMeasures || data.treatment;
+            document.getElementById('resBiological').textContent = proto.biologicalTreatment || 'Phun chế phẩm sinh học đối kháng Trichoderma hoặc nấm xanh định kỳ.';
+            document.getElementById('resChemical').textContent = proto.chemicalTreatment || data.treatment;
+            document.getElementById('resRecovery').textContent = proto.recoveryNutrition || 'Bón phân hữu cơ cân đối và bổ sung vi lượng Bo, Kẽm.';
+            document.getElementById('resPrevention').textContent = proto.prevention || 'Vệ sinh tàn dư mùa vụ và luân canh cây trồng.';
+
+            // Toa thuốc in
+            const now = new Date();
+            const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth()+1).padStart(2, '0')}/${now.getFullYear()}`;
+            document.getElementById('prescDate').textContent = 'Ngày chẩn đoán: ' + dateStr;
+            document.getElementById('prescDiseaseName').textContent = data.vietnameseName;
+            document.getElementById('prescScientific').textContent = data.scientificName;
+            document.getElementById('prescSummary').innerHTML = `
+                <div><strong>Hoạt chất đặc trị:</strong> ${proto.chemicalTreatment || data.treatment}</div>
+                <div class="mt-1"><strong>Khuyến cáo sinh học:</strong> ${proto.biologicalTreatment || 'Không'}</div>
+            `;
 
             // Top candidates
             const candidatesList = document.getElementById('candidatesList');
@@ -472,10 +960,140 @@
                 <td><strong class="text-dark">${data.vietnameseName}</strong><span class="text-muted small d-block">${data.scientificName}</span></td>
                 <td><span class="badge bg-success-subtle text-success">${data.confidence}%</span></td>
                 <td><span class="${badgeClass}">${data.severity}</span></td>
-                <td class="small text-secondary text-truncate" style="max-width: 280px;">${data.treatment}</td>
+                <td class="small text-secondary text-truncate" style="max-width: 250px;">${data.treatment}</td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-outline-bean rounded-pill"
+                            data-name="${data.vietnameseName}" data-scientific="${data.scientificName}" data-conf="${data.confidence}" data-sev="${data.severity}" data-sevcode="${data.severityCode}" data-img="${data.imageUrl}" data-symptoms="${data.symptoms}" data-treatment="${data.treatment}"
+                            onclick="openHistoryDetailModal(this)">
+                        <i class="bi bi-file-medical me-1"></i> Xem phác đồ
+                    </button>
+                </td>
             `;
 
             historyTableBody.insertBefore(tr, historyTableBody.firstChild);
+        }
+
+        // Mở Modal xem chi tiết bệnh từ danh sách 11 classes
+        function openDiseaseModal(classId) {
+            const disease = diseaseKnowledgeCache[classId];
+            if (!disease) {
+                // Fallback nếu chưa tải xong cache
+                fetch(`/api/ai/diseases`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.diseases) {
+                            data.diseases.forEach(d => { diseaseKnowledgeCache[d.class_id] = d; });
+                            openDiseaseModal(classId);
+                        }
+                    });
+                return;
+            }
+
+            document.getElementById('modalDiseaseName').textContent = disease.vietnamese_name;
+            document.getElementById('modalScientificName').textContent = disease.scientific_name;
+            document.getElementById('modalCategoryBadge').textContent = disease.category || 'Nấm bệnh';
+
+            const badge = document.getElementById('modalSeverityBadge');
+            badge.textContent = 'Mức độ: ' + disease.severity;
+            if (disease.severity_code === 'HIGH') badge.className = 'badge badge-severity-high';
+            else if (disease.severity_code === 'SAFE') badge.className = 'badge badge-severity-low';
+            else badge.className = 'badge badge-severity-med';
+
+            document.getElementById('modalSymptoms').textContent = disease.symptoms;
+            document.getElementById('modalConditions').textContent = disease.spread_conditions || 'Đang cập nhật điều kiện phát sinh.';
+
+            const proto = disease.protocol || {};
+            document.getElementById('modalCultural').textContent = proto.cultural_measures || 'Đang cập nhật.';
+            document.getElementById('modalBiological').textContent = proto.biological_treatment || 'Đang cập nhật.';
+            document.getElementById('modalChemical').textContent = proto.chemical_treatment || 'Đang cập nhật.';
+            document.getElementById('modalRecovery').textContent = proto.recovery_nutrition || 'Đang cập nhật.';
+            document.getElementById('modalPrevention').textContent = proto.prevention || 'Đang cập nhật.';
+
+            const modal = new bootstrap.Modal(document.getElementById('diseaseDetailModal'));
+            modal.show();
+        }
+
+        // Mở Modal xem lại lượt chẩn đoán từ bảng lịch sử
+        function openHistoryDetailModal(btn) {
+            const name = btn.getAttribute('data-name');
+            const scientific = btn.getAttribute('data-scientific');
+            const conf = btn.getAttribute('data-conf');
+            const sev = btn.getAttribute('data-sev');
+            const sevcode = btn.getAttribute('data-sevcode');
+            const img = btn.getAttribute('data-img');
+            const symptoms = btn.getAttribute('data-symptoms');
+            const treatment = btn.getAttribute('data-treatment');
+
+            document.getElementById('histTitle').textContent = name;
+            document.getElementById('histScientific').textContent = scientific;
+            document.getElementById('histConfidence').textContent = conf + '%';
+            document.getElementById('histSymptoms').textContent = symptoms;
+            document.getElementById('histTreatment').textContent = treatment;
+            document.getElementById('histImg').src = img;
+
+            const badge = document.getElementById('histSevBadge');
+            badge.textContent = 'Mức độ: ' + sev;
+            if (sevcode === 'HIGH') badge.className = 'badge badge-severity-high mb-1';
+            else if (sevcode === 'SAFE') badge.className = 'badge badge-severity-low mb-1';
+            else badge.className = 'badge badge-severity-med mb-1';
+
+            const modal = new bootstrap.Modal(document.getElementById('historyViewModal'));
+            modal.show();
+        }
+
+        // In toa thuốc phác đồ
+        function printPrescription() {
+            const printContent = document.getElementById('printablePrescription').innerHTML;
+            const originalContent = document.body.innerHTML;
+
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>BeanAI - Phác đồ điều trị</title>');
+            printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">');
+            printWindow.document.write('<style>body { font-family: sans-serif; padding: 25px; }</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(printContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
+        // Sao chép phác đồ vào clipboard
+        function copyPrescription() {
+            if (!currentPredictionData) return;
+            const p = currentPredictionData;
+            const proto = p.treatmentProtocol || {};
+            const text = `[BeanAI - Phác đồ điều trị cây đậu]
+Bệnh: ${p.vietnameseName} (${p.scientificName})
+Độ tin cậy AI: ${p.confidence}% - Mức độ: ${p.severity}
+1. Canh tác: ${proto.culturalMeasures || p.treatment}
+2. Sinh học: ${proto.biologicalTreatment || 'N/A'}
+3. Hóa học đặc trị: ${proto.chemicalTreatment || p.treatment}
+4. Phục hồi: ${proto.recoveryNutrition || 'N/A'}`;
+            navigator.clipboard.writeText(text).then(() => {
+                showToastNotification('Đã sao chép phác đồ điều trị vào bộ nhớ tạm thành công!');
+            }).catch(() => {
+                showToastNotification('Đã sao chép phác đồ!');
+            });
+        }
+
+        function copyModalProtocol() {
+            const title = document.getElementById('modalDiseaseName').textContent;
+            const sci = document.getElementById('modalScientificName').textContent;
+            const chem = document.getElementById('modalChemical').textContent;
+            const bio = document.getElementById('modalBiological').textContent;
+            const text = `[Phác đồ điều trị BeanAI]
+Bệnh: ${title} (${sci})
+- Hóa học đặc trị: ${chem}
+- Sinh học hữu cơ: ${bio}`;
+            navigator.clipboard.writeText(text).then(() => {
+                showToastNotification('Đã sao chép phác đồ điều trị vào bộ nhớ tạm thành công!');
+            }).catch(() => {
+                showToastNotification('Đã sao chép phác đồ!');
+            });
         }
     </script>
 </body>

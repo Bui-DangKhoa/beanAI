@@ -1,0 +1,14 @@
+**/.git
+**/.gitignore
+**/.gitattributes
+**/.github
+.gradle
+.idea
+.vscode
+target/
+build/
+bin/
+uploads/
+*.log
+scratch/
+HELP.md

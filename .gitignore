@@ -1,23 +1,65 @@
-HELP.md
+# ==========================================
+# Build Artifacts & Dependencies
+# ==========================================
 target/
+build/
+bin/
+out/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-### STS ###
+# Gradle cache
+.gradle/
+*.gradle-user-home/
+
+# ==========================================
+# Environment Variables & Sensitive Credentials
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.env
+application-local.properties
+application-secret.properties
+
+# ==========================================
+# User Uploads & Media Files (Tránh đẩy ảnh người dùng lên git)
+# ==========================================
+uploads/*
+!uploads/test_leaf.jpg
+!uploads/.gitkeep
+
+# ==========================================
+# Logs & Temporary Files
+# ==========================================
+*.log
+logs/
+scratch/
+HELP.md
+
+# ==========================================
+# IDEs & Editors
+# ==========================================
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### Eclipse / STS ###
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
 
 ### NetBeans ###
 /nbproject/private/
@@ -25,9 +67,10 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+# ==========================================
+# OS Specific Files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini

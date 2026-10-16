@@ -49,9 +49,9 @@
                     <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted small">Tổng số Nông hộ</div>
-                                <div class="fs-3 fw-bold text-dark">1,248</div>
-                                <div class="text-success small"><i class="bi bi-arrow-up-short"></i> +14% tháng này</div>
+                                <div class="text-muted small">Tổng số tài khoản</div>
+                                <div class="fs-3 fw-bold text-dark" th:text="${#numbers.formatInteger(totalUsers ?: 0, 1, 'COMMA')}">0</div>
+                                <div class="text-muted small">Đã đăng ký trong hệ thống</div>
                             </div>
                             <div class="rounded-3 bg-primary-subtle text-primary p-3 fs-3">
                                 <i class="bi bi-people-fill"></i>
@@ -64,8 +64,8 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <div class="text-muted small">Lượt chẩn đoán AI</div>
-                                <div class="fs-3 fw-bold text-dark">18,520</div>
-                                <div class="text-success small"><i class="bi bi-arrow-up-short"></i> +22% tuần này</div>
+                                <div class="fs-3 fw-bold text-dark" th:text="${#numbers.formatInteger(totalDiagnoses ?: 0, 1, 'COMMA')}">0</div>
+                                <div class="text-muted small">Tổng số lượt quét</div>
                             </div>
                             <div class="rounded-3 bg-success-subtle text-success p-3 fs-3">
                                 <i class="bi bi-cpu-fill"></i>
@@ -112,7 +112,7 @@
                             <h5 class="fw-bold mb-0 text-dark">
                                 <i class="bi bi-person-lines-fill text-primary me-2"></i> Tài khoản trong hệ thống
                             </h5>
-                            <span class="badge bg-light text-dark border">Cập nhật tức thời</span>
+                            <span class="badge bg-light text-dark border" th:text="${(users != null ? #lists.size(users) : 0) + ' tài khoản'}">0 tài khoản</span>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover align-middle mb-0">
@@ -126,26 +126,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><strong>Quản trị viên BeanAI</strong></td>
-                                        <td><code>admin@beanai.com</code></td>
-                                        <td><span class="badge bg-danger-subtle text-danger border border-danger-subtle">ROLE_ADMIN</span></td>
-                                        <td><span class="badge bg-success-subtle text-success">Hoạt động</span></td>
-                                        <td class="text-end"><button class="btn btn-sm btn-light border" disabled>Mặc định</button></td>
+                                    <tr th:each="u : ${users}">
+                                        <td>
+                                            <strong th:text="${u.fullName}">Họ tên</strong>
+                                            <div class="text-muted small" th:if="${u.createdAt != null}"
+                                                 th:text="${'Đăng ký: ' + #temporals.format(u.createdAt, 'dd/MM/yyyy HH:mm')}"></div>
+                                        </td>
+                                        <td><code th:text="${u.email}">email</code></td>
+                                        <td>
+                                            <span th:each="r : ${u.roles}"
+                                                  th:text="${r.name}"
+                                                  th:class="${r.name == 'ROLE_ADMIN'} ? 'badge bg-danger-subtle text-danger border border-danger-subtle me-1' : 'badge bg-success-subtle text-success border border-success-subtle me-1'">ROLE</span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${u.enabled}" class="badge bg-success-subtle text-success">Hoạt động</span>
+                                            <span th:unless="${u.enabled}" class="badge bg-secondary-subtle text-secondary">Đã khóa</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <button th:if="${#lists.contains(u.roles.![name], 'ROLE_ADMIN')}" class="btn btn-sm btn-light border" disabled>Mặc định</button>
+                                            <button th:unless="${#lists.contains(u.roles.![name], 'ROLE_ADMIN')}" class="btn btn-sm btn-outline-secondary">Khóa</button>
+                                        </td>
                                     </tr>
-                                    <tr>
-                                        <td><strong>Nguyễn Văn Nông Dân</strong></td>
-                                        <td><code>nongdan@gmail.com</code></td>
-                                        <td><span class="badge bg-success-subtle text-success border border-success-subtle">ROLE_FARMER</span></td>
-                                        <td><span class="badge bg-success-subtle text-success">Hoạt động</span></td>
-                                        <td class="text-end"><button class="btn btn-sm btn-outline-secondary">Khóa</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Hợp Tác Xã An Giang</strong></td>
-                                        <td><code>htx.angiang@gmail.com</code></td>
-                                        <td><span class="badge bg-success-subtle text-success border border-success-subtle">ROLE_FARMER</span></td>
-                                        <td><span class="badge bg-success-subtle text-success">Hoạt động</span></td>
-                                        <td class="text-end"><button class="btn btn-sm btn-outline-secondary">Khóa</button></td>
+                                    <tr th:if="${#lists.isEmpty(users)}">
+                                        <td colspan="5" class="text-center text-muted py-4">Chưa có tài khoản nào trong hệ thống.</td>
                                     </tr>
                                 </tbody>
                             </table>

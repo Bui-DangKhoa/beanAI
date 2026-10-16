@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User registerUser(RegisterDTO registerDTO) {
         // Kiểm tra tính duy nhất của email
-        if (userRepository.existsByEmail(registerDTO.getEmail())) {
+        if (userRepository.existsByEmail(registerDTO.getEmail().trim().toLowerCase())) {
             throw new EmailAlreadyExistsException("Email '" + registerDTO.getEmail() + "' đã tồn tại trong hệ thống.");
         }
 
@@ -73,5 +74,17 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email.trim().toLowerCase());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> findAllUsers() {
+        return userRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countUsers() {
+        return userRepository.count();
     }
 }

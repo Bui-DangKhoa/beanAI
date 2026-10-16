@@ -49,7 +49,7 @@
                     <div class="col-lg-5">
                         <div class="card border-0 shadow-lg rounded-4 overflow-hidden p-3 bg-white">
                             <div class="position-relative rounded-3 overflow-hidden" style="height: 270px; background: #e5e7eb;">
-                                <img src="https://images.unsplash.com/photo-1592417817098-8f3d6910985b?auto=format&fit=crop&w=700&q=80" 
+                                <img th:src="@{/images/diseases/rust.jpg}" src="/images/diseases/rust.jpg" 
                                      alt="Lá đậu chẩn đoán" class="w-100 h-100 object-fit-cover">
                                 <div class="position-absolute top-0 end-0 m-3 badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">
                                     <i class="bi bi-check-circle-fill me-1"></i> Đã quét AI
@@ -131,15 +131,16 @@
                 </div>
                 
                 <div class="row g-4">
-                    <!-- Bệnh 1 -->
+                    <!-- Bệnh 1: Gỉ sắt -->
                     <div class="col-lg-4 col-md-6">
                         <div class="disease-card">
                             <div class="disease-img-wrapper">
-                                <img src="https://images.unsplash.com/photo-1592417817098-8f3d6910985b?auto=format&fit=crop&w=500&q=80" alt="Bệnh gỉ sắt">
+                                <img th:src="@{/images/diseases/rust.jpg}" src="/images/diseases/rust.jpg" alt="Bệnh gỉ sắt">
                             </div>
                             <h5 class="fw-bold mb-1">Bệnh gỉ sắt trên cây đậu</h5>
+                            <div class="text-muted small fst-italic mb-2">Uromyces appendiculatus</div>
                             <p class="text-muted small mb-3 flex-grow-1">
-                                Vết bệnh màu nâu vàng rỉ sắt ở mặt dưới lá làm rụng lá sớm, giảm nghiêm trọng năng suất thu hoạch.
+                                Xuất hiện hàng loạt mụn bột màu nâu đỏ như rỉ sét ở mặt dưới lá, làm lá vàng khô xơ xác và rụng sớm.
                             </p>
                             <div>
                                 <span class="badge-severity-high"><i class="bi bi-exclamation-triangle-fill me-1"></i> Mức độ: Cao</span>
@@ -147,79 +148,85 @@
                         </div>
                     </div>
                     
-                    <!-- Bệnh 2 -->
+                    <!-- Bệnh 2: Thán thư -->
                     <div class="col-lg-4 col-md-6">
                         <div class="disease-card">
                             <div class="disease-img-wrapper">
-                                <img src="https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=500&q=80" alt="Phấn trắng">
+                                <img th:src="@{/images/diseases/anthracnose.jpg}" src="/images/diseases/anthracnose.jpg" alt="Bệnh thán thư">
                             </div>
-                            <h5 class="fw-bold mb-1">Bệnh phấn trắng</h5>
+                            <h5 class="fw-bold mb-1">Bệnh thán thư</h5>
+                            <div class="text-muted small fst-italic mb-2">Colletotrichum lindemuthianum</div>
                             <p class="text-muted small mb-3 flex-grow-1">
-                                Lớp bột trắng bao phủ mặt lá khiến lá quăn queo, giảm quang hợp và làm hạt đậu bị lép.
-                            </p>
-                            <div>
-                                <span class="badge-severity-med"><i class="bi bi-info-circle-fill me-1"></i> Mức độ: Trung bình</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Bệnh 3 -->
-                    <div class="col-lg-4 col-md-6">
-                        <div class="disease-card">
-                            <div class="disease-img-wrapper">
-                                <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=500&q=80" alt="Đốm lá">
-                            </div>
-                            <h5 class="fw-bold mb-1">Bệnh đốm lá Cerco</h5>
-                            <p class="text-muted small mb-3 flex-grow-1">
-                                Các đốm tròn màu nâu xám có quầng vàng xuất hiện rải rác trên phiến lá già sau các cơn mưa ẩm.
-                            </p>
-                            <div>
-                                <span class="badge-severity-med"><i class="bi bi-info-circle-fill me-1"></i> Mức độ: Trung bình</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Bệnh 4 -->
-                    <div class="col-lg-4 col-md-6">
-                        <div class="disease-card">
-                            <div class="disease-img-wrapper">
-                                <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=500&q=80" alt="Rầy mềm">
-                            </div>
-                            <h5 class="fw-bold mb-1">Rầy mềm hại đọt đậu</h5>
-                            <p class="text-muted small mb-3 flex-grow-1">
-                                Tập trung chích hút nhựa ở chồi non và hoa khiến hoa rụng nhiều, đồng thời truyền virus khảm lá.
-                            </p>
-                            <div>
-                                <span class="badge-severity-low"><i class="bi bi-shield-check me-1"></i> Mức độ: Nhẹ</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Bệnh 5 -->
-                    <div class="col-lg-4 col-md-6">
-                        <div class="disease-card">
-                            <div class="disease-img-wrapper">
-                                <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=500&q=80" alt="Sâu đục quả">
-                            </div>
-                            <h5 class="fw-bold mb-1">Sâu đục quả đậu</h5>
-                            <p class="text-muted small mb-3 flex-grow-1">
-                                Sâu non đục lỗ chui vào trong vỏ quả ăn hạt non, làm thối quả và giảm giá trị thương phẩm xuất khẩu.
+                                Vết lõm sâu màu nâu đen trên gân lá, cuống và vỏ quả. Khi ẩm ướt rỉ dịch bào tử hồng làm thối mục hạt đậu.
                             </p>
                             <div>
                                 <span class="badge-severity-high"><i class="bi bi-exclamation-triangle-fill me-1"></i> Mức độ: Cao</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bệnh 3: Đốm góc lá -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card">
+                            <div class="disease-img-wrapper">
+                                <img th:src="@{/images/diseases/angular_leaf_spot.jpg}" src="/images/diseases/angular_leaf_spot.jpg" alt="Đốm góc lá">
+                            </div>
+                            <h5 class="fw-bold mb-1">Bệnh đốm góc lá</h5>
+                            <div class="text-muted small fst-italic mb-2">Phaeoisariopsis griseola</div>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                Các đốm góc cạnh đa giác bị chặn bởi gân lá, mặt dưới có lớp phấn xám tro, làm lá rụng sớm giảm quang hợp.
+                            </p>
+                            <div>
+                                <span class="badge-severity-med"><i class="bi bi-info-circle-fill me-1"></i> Mức độ: Trung bình</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bệnh 4: Đốm vi khuẩn quầng vàng -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card">
+                            <div class="disease-img-wrapper">
+                                <img th:src="@{/images/diseases/halo_blight.jpg}" src="/images/diseases/halo_blight.jpg" alt="Halo Blight">
+                            </div>
+                            <h5 class="fw-bold mb-1">Đốm cháy vi khuẩn quầng vàng</h5>
+                            <div class="text-muted small fst-italic mb-2">Pseudomonas syringae (Halo Blight)</div>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                Đốm ngậm nước bao bọc bởi quầng vàng chanh sáng đặc trưng, lây lan bùng phát thành dịch nhanh chóng.
+                            </p>
+                            <div>
+                                <span class="badge-severity-high"><i class="bi bi-exclamation-triangle-fill me-1"></i> Mức độ: Cao</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bệnh 5: Sâu khoang ăn lá -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="disease-card">
+                            <div class="disease-img-wrapper">
+                                <img th:src="@{/images/diseases/caterpillar.jpg}" src="/images/diseases/caterpillar.jpg" alt="Sâu khoang ăn lá">
+                            </div>
+                            <h5 class="fw-bold mb-1">Sâu khoang ăn lá đậu</h5>
+                            <div class="text-muted small fst-italic mb-2">Spodoptera litura (Fabricius)</div>
+                            <p class="text-muted small mb-3 flex-grow-1">
+                                Sâu non cắn thủng phiến lá lỗ chỗ hoặc khuyết mép, ban đêm cắn phá dữ dội chỉ còn trơ gân lá xơ xác.
+                            </p>
+                            <div>
+                                <span class="badge-severity-high"><i class="bi bi-bug-fill me-1"></i> Sâu hại</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Card Xem thêm -->
+                    <!-- Card Xem thêm & Chẩn đoán ngay -->
                     <div class="col-lg-4 col-md-6">
-                        <div class="disease-card justify-content-center align-items-center text-center p-4 border-dashed" style="border: 2px dashed #cbd5e1;">
+                        <div class="disease-card justify-content-center align-items-center text-center p-4 border-dashed" style="border: 2px dashed #205c3b;">
                             <div class="mb-3 text-success fs-1">
-                                <i class="bi bi-journal-plus"></i>
+                                <i class="bi bi-cpu"></i>
                             </div>
-                            <h5 class="fw-bold mb-2">Thư viện liên tục cập nhật</h5>
-                            <p class="text-muted small mb-4">Các chuyên gia nông nghiệp của chúng tôi bổ sung thêm 2 giống bệnh mới mỗi tháng.</p>
-                            <a th:href="@{/register}" class="btn btn-outline-bean btn-sm">Tham gia cùng chúng tôi</a>
+                            <h5 class="fw-bold mb-1">11 Bệnh & Phác đồ chuẩn</h5>
+                            <p class="text-muted small mb-3">Mô hình AI best.pt đã học nhận diện 11 lớp bệnh học cây đậu và phác đồ điều trị 4 bước chuyên sâu.</p>
+                            <a th:href="@{/dashboard}" class="btn btn-primary-bean btn-sm">
+                                <i class="bi bi-camera me-1"></i> Trải nghiệm chẩn đoán ngay
+                            </a>
                         </div>
                     </div>
                 </div>
