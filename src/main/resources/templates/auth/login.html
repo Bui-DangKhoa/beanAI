@@ -41,7 +41,7 @@
                 </div>
 
                 <!-- THÔNG BÁO HẾT HẠN PHIÊN LÀM VIỆC (SESSION TIMEOUT / EXPIRED) -->
-                <div th:if="${param.timeout or param.expired}" class="alert alert-warning d-flex align-items-center rounded-3 py-2 px-3 small mb-3 border-0 bg-warning-subtle text-warning-emphasis">
+                <div th:if="${param.timeout != null or param.expired != null}" class="alert alert-warning d-flex align-items-center rounded-3 py-2 px-3 small mb-3 border-0 bg-warning-subtle text-warning-emphasis">
                     <i class="bi bi-clock-history fs-5 me-2"></i>
                     <div>
                         Phiên làm việc của bạn đã hết hạn do không hoạt động quá 30 phút hoặc được đăng nhập ở thiết bị khác. Vui lòng đăng nhập lại!
